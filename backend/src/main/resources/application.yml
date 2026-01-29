@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+app:
+  jwt:
+    # Для разработки: замените на безопасный ключ в production (минимум 32 байта)
+    secret: "change-me-please-and-use-strong-key-32bytes!!"
+    issuer: "lerncheck"
+    ttlMinutes: 60
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:lerncheckdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: DEBUG

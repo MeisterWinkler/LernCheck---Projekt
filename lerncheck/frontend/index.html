@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lerncheck</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">LC</div>
+      <div>
+        <div class="brand-name">Lerncheck</div>
+        <div class="brand-sub">Anonyme Tests • Klassenstatistik • Adaptive Fragen</div>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button id="btnReset" class="btn btn-ghost" title="Alles lokal löschen">Reset</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- Screen: Home -->
+    <section id="screenHome" class="card">
+      <h1>Willkommen bei Lerncheck</h1>
+      <p class="muted">Wähle deinen Zugang.</p>
+
+      <div class="grid2">
+        <div class="panel">
+          <h2>👨‍🏫 Lehrer</h2>
+          <p class="muted">Tests hochladen, Schüler-Codes erstellen, anonyme Klassenstatistik ansehen.</p>
+          <button class="btn" id="goTeacher">Als Lehrer starten</button>
+        </div>
+
+        <div class="panel">
+          <h2>👩‍🎓 Schüler</h2>
+          <p class="muted">Mit Code einloggen, Test anonym bearbeiten, Ergebnis sofort sehen.</p>
+          <button class="btn" id="goStudent">Als Schüler starten</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Screen: Teacher -->
+    <section id="screenTeacher" class="card hidden">
+      <div class="row space-between">
+        <h1>Lehrerbereich</h1>
+        <button class="btn btn-ghost" id="backFromTeacher">← Zurück</button>
+      </div>
+
+      <div class="grid2">
+        <!-- Student codes -->
+        <div class="panel">
+          <h2>1) Schüler-Codes erstellen</h2>
+          <p class="muted">Du legst nur Codes an (keine Namen). Schüler loggen sich anonym ein.</p>
+
+          <div class="row">
+            <input id="studentCount" type="number" min="1" max="40" value="10" />
+            <button class="btn" id="btnCreateStudents">Codes generieren</button>
+          </div>
+
+          <div class="small muted">Aktive Codes:</div>
+          <div id="studentCodes" class="codes"></div>
+        </div>
+
+        <!-- Test upload -->
+        <div class="panel">
+          <h2>2) Test hochladen (JSON)</h2>
+          <p class="muted">Upload eines Tests. Lerncheck kann optional “schwere Fragen” aus dem letzten Test hinzufügen.</p>
+
+          <input id="testFile" type="file" accept="application/json" />
+          <div class="row">
+            <label class="check">
+              <input id="includeHardQuestions" type="checkbox" checked />
+              <span>Schwere Fragen automatisch hinzufügen</span>
+            </label>
+          </div>
+
+          <div class="row">
+            <button class="btn" id="btnUploadTest">Test laden</button>
+            <button class="btn btn-ghost" id="btnActivateTest" disabled>Test aktivieren</button>
+          </div>
+
+          <div id="testInfo" class="muted small"></div>
+        </div>
+      </div>
+
+      <div class="grid2">
+        <!-- Class analytics -->
+        <div class="panel">
+          <h2>3) Klassenstatistik (anonym)</h2>
+          <p class="muted">Nur aggregierte Werte. Keine individuellen Ergebnisse sichtbar.</p>
+
+          <div class="row">
+            <button class="btn" id="btnRefreshStats">Statistik aktualisieren</button>
+            <span class="badge" id="activeTestBadge">Kein aktiver Test</span>
+          </div>
+
+          <div id="statsBox" class="stats"></div>
+        </div>
+
+        <!-- Feedback -->
+        <div class="panel">
+          <h2>4) Feedback zum Unterricht</h2>
+          <p class="muted">Anonyme Rückmeldungen der Schüler nach dem Test.</p>
+          <div class="row">
+            <button class="btn" id="btnRefreshFeedback">Feedback laden</button>
+          </div>
+          <div id="feedbackBox" class="feedback"></div>
+        </div>
+      </div>
+
+      <details class="panel">
+        <summary><strong>Debug / Daten</strong> (optional)</summary>
+        <div class="row">
+          <button class="btn btn-ghost" id="btnExportData">Export JSON</button>
+        </div>
+        <pre id="debugOut" class="pre"></pre>
+      </details>
+    </section>
+
+    <!-- Screen: Student login -->
+    <section id="screenStudentLogin" class="card hidden">
+      <div class="row space-between">
+        <h1>Schülerbereich</h1>
+        <button class="btn btn-ghost" id="backFromStudentLogin">← Zurück</button>
+      </div>
+
+      <div class="panel">
+        <h2>Mit Code einloggen</h2>
+        <p class="muted">Du bleibst anonym. Dein Code identifiziert dich nur als “Schüler X”.</p>
+        <div class="row">
+          <input id="studentCodeInput" placeholder="z. B. A3F9K2" />
+          <button class="btn" id="btnStudentLogin">Einloggen</button>
+        </div>
+        <div id="studentLoginMsg" class="small"></div>
+      </div>
+
+      <div class="panel">
+        <h2>Aktiver Test</h2>
+        <div id="studentActiveTestInfo" class="muted"></div>
+      </div>
+    </section>
+
+    <!-- Screen: Student test -->
+    <section id="screenStudentTest" class="card hidden">
+      <div class="row space-between">
+        <h1 id="studentTestTitle">Test</h1>
+        <button class="btn btn-ghost" id="exitStudentTest">← Abbrechen</button>
+      </div>
+
+      <div id="questionArea" class="questions"></div>
+
+      <div class="row space-between">
+        <div class="muted small" id="progressInfo"></div>
+        <button class="btn" id="btnSubmitTest">Abgeben</button>
+      </div>
+    </section>
+
+    <!-- Screen: Student result + feedback -->
+    <section id="screenStudentResult" class="card hidden">
+      <div class="row space-between">
+        <h1>Dein Ergebnis</h1>
+        <button class="btn btn-ghost" id="backToStudentLogin">← Zurück</button>
+      </div>
+
+      <div id="studentResultBox" class="panel"></div>
+
+      <div class="panel">
+        <h2>Anonymes Feedback zum Unterricht</h2>
+        <p class="muted">Optional. Hilft der Lehrkraft, den Unterricht zu verbessern.</p>
+        <textarea id="feedbackText" rows="4" placeholder="Was war gut? Was war unklar? Tempo? Beispiele?"></textarea>
+        <div class="row">
+          <button class="btn" id="btnSendFeedback">Feedback senden</button>
+          <span id="feedbackMsg" class="small muted"></span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <span class="muted small">Lerncheck • Frontend-Demo • v1</span>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>
