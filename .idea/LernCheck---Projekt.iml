@@ -14,5 +14,14 @@
     <orderEntry type="library" name="Maven: org.hibernate.orm:hibernate-core:6.5.2.Final" level="project" />
     <orderEntry type="library" name="Maven: org.springframework:spring-context:6.1.12" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.data:spring-data-jpa:3.3.3" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-autoconfigure:3.3.3" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:3.3.3" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-beans:6.1.12" level="project" />
+    <orderEntry type="library" name="Maven: io.jsonwebtoken:jjwt-api:0.12.5" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-config:6.3.3" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-web:6.3.3" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.tomcat.embed:tomcat-embed-core:10.1.28" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.security:spring-security-core:6.3.3" level="project" />
+    <orderEntry type="library" name="Maven: jakarta.validation:jakarta.validation-api:3.0.0" level="project" />
   </component>
 </module>
