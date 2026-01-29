@@ -1,0 +1,96 @@
+<!-- Summary: Lehrer-Dashboard: Klassen/Quiz verwalten, Fragen hinzufügen, Heatmap anzeigen. -->
+<!doctype html>
+<html lang="de">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="assets/styles.css" />
+    <title>Lerncheck – Lehrer Dashboard</title>
+</head>
+<body>
+<header>
+    <a href="index.html"><strong>Lerncheck</strong></a>
+    <div class="row">
+        <small id="authState">nicht eingeloggt</small>
+        <button id="btnLogout" class="secondary">Logout</button>
+    </div>
+</header>
+
+<main>
+    <section class="card">
+        <h2>Klasse erstellen</h2>
+        <div class="row">
+            <input id="className" placeholder="z.B. FIA23" />
+            <button id="btnCreateClass">Erstellen</button>
+        </div>
+        <div id="classMsg" class="msg"></div>
+    </section>
+
+    <section class="card">
+        <h2>Quiz erstellen</h2>
+        <div class="row">
+            <select id="classSelect"></select>
+            <input id="quizTitle" placeholder="z.B. LF12 – Grundlagen" />
+            <button id="btnCreateQuiz">Quiz erstellen</button>
+        </div>
+        <p>Nach dem Erstellen erhältst du eine PIN für die anonyme Teilnahme.</p>
+        <div id="quizMsg" class="msg"></div>
+    </section>
+
+    <section class="card">
+        <h2>Fragen hinzufügen</h2>
+        <div class="row">
+            <select id="quizSelect"></select>
+            <button id="btnLoadQuizzes" class="secondary">Quiz-Liste aktualisieren</button>
+        </div>
+
+        <hr>
+
+        <div class="grid grid-2">
+            <div>
+                <label>Fragetext</label>
+                <textarea id="qText" placeholder="Frage..."></textarea>
+                <label>Option A</label>
+                <input id="qA" placeholder="Antwort A" />
+                <label>Option B</label>
+                <input id="qB" placeholder="Antwort B" />
+                <label>Option C</label>
+                <input id="qC" placeholder="Antwort C" />
+                <label>Option D</label>
+                <input id="qD" placeholder="Antwort D" />
+                <label>Korrekt (A/B/C/D)</label>
+                <input id="qCorrect" placeholder="A" />
+                <div class="row">
+                    <button id="btnAddQuestion" class="secondary">Zur Liste</button>
+                    <span class="badge" id="qCount">0 in Liste</span>
+                </div>
+            </div>
+
+            <div>
+                <h3>Upload-Liste</h3>
+                <p>Du sammelst mehrere Fragen und lädst sie dann als JSON hoch.</p>
+                <div id="questionList" class="card"></div>
+                <div class="row">
+                    <button id="btnUploadQuestions">Upload</button>
+                    <button id="btnClearQuestions" class="secondary">Liste leeren</button>
+                </div>
+                <div id="questionMsg" class="msg"></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="card">
+        <h2>Heatmap / Statistik</h2>
+        <div class="row">
+            <select id="heatmapQuizSelect"></select>
+            <button id="btnLoadHeatmap">Heatmap laden</button>
+        </div>
+
+        <div id="heatmapMsg" class="msg"></div>
+        <div id="heatmapTableWrap"></div>
+    </section>
+</main>
+
+<script type="module" src="js/teacher.js"></script>
+</body>
+</html>
