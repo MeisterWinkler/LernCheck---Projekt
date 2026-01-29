@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>LernCheck</title>
+</head>
+<body>
+
+<h1>LernCheck 🚀</h1>
+
+<button onclick="loadTeachers()">API Test</button>
+
+<pre id="out"></pre>
+
+<script>
+    function loadTeachers() {
+      fetch("/api/teachers")
+        .then(r => r.json())
+        .then(d => document.getElementById("out").innerText =
+          JSON.stringify(d, null, 2));
+    }
+</script>
+
+</body>
+</html>
