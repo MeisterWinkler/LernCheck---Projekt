@@ -1,0 +1,19 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0" version="29.3.6">
+  <diagram name="Seite-1" id="iMobsZxBM9LB9BxtV4RY">
+    <mxGraphModel dx="1426" dy="759" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="7Nn5jLnNqP0Vg3IsZpR0-1" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;&lt;b&gt;Quiz erstellen&lt;/b&gt;&lt;/font&gt;" vertex="1">
+          <mxGeometry height="30" width="165" x="502" y="30" as="geometry" />
+        </mxCell>
+        <mxCell id="7Nn5jLnNqP0Vg3IsZpR0-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;neues Quiz erstellen&lt;/font&gt;" vertex="1">
+          <mxGeometry height="280" width="400" x="640" y="200" as="geometry" />
+        </mxCell>
+        <mxCell id="7Nn5jLnNqP0Vg3IsZpR0-4" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Template verwenden&lt;/font&gt;" vertex="1">
+          <mxGeometry height="280" width="400" x="120" y="200" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

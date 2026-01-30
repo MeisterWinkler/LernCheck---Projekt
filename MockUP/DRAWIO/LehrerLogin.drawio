@@ -1,0 +1,28 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:147.0) Gecko/20100101 Firefox/147.0" version="29.3.6">
+  <diagram name="Seite-1" id="vOG7lpTglmKDMwoWm5A7">
+    <mxGraphModel dx="1678" dy="893" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1169" pageHeight="827" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="FpjOOGMSw-FHfPgiUKjB-1" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="60" width="430" x="370" y="190" as="geometry" />
+        </mxCell>
+        <mxCell id="FpjOOGMSw-FHfPgiUKjB-2" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;b&gt;&lt;font style=&quot;font-size: 25px;&quot;&gt;Lehrer Login&lt;/font&gt;&lt;/b&gt;" vertex="1">
+          <mxGeometry height="30" width="230" x="470" y="20" as="geometry" />
+        </mxCell>
+        <mxCell id="FpjOOGMSw-FHfPgiUKjB-3" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="" vertex="1">
+          <mxGeometry height="60" width="430" x="370" y="290" as="geometry" />
+        </mxCell>
+        <mxCell id="FpjOOGMSw-FHfPgiUKjB-5" parent="1" style="rounded=0;whiteSpace=wrap;html=1;" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Anmelden&lt;/font&gt;" vertex="1">
+          <mxGeometry height="60" width="430" x="370" y="383" as="geometry" />
+        </mxCell>
+        <mxCell id="FpjOOGMSw-FHfPgiUKjB-6" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Anmeldename:&lt;/font&gt;" vertex="1">
+          <mxGeometry height="30" width="110" x="230" y="205" as="geometry" />
+        </mxCell>
+        <mxCell id="FpjOOGMSw-FHfPgiUKjB-7" parent="1" style="text;html=1;whiteSpace=wrap;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;rounded=0;" value="&lt;font style=&quot;font-size: 20px;&quot;&gt;Passwort:&lt;/font&gt;" vertex="1">
+          <mxGeometry height="30" width="60" x="280" y="305" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
