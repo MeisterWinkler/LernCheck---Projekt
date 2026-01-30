@@ -1,0 +1,117 @@
+<!-- Summary: Schüler: Quiz durchführen (eine Frage nach der anderen) + Timer. -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Quiz</title>
+    <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<div class="topbar">
+    <h1 id="title">Quiz</h1>
+    <div class="timer">⏱ <span id="t">--:--</span></div>
+</div>
+
+<div class="card" style="width:auto;">
+    <h2 id="qText">Frage</h2>
+
+    <div>
+        <label><input type="radio" name="opt" value="A"> <span id="oa"></span></label>
+        <label><input type="radio" name="opt" value="B"> <span id="ob"></span></label>
+        <label><input type="radio" name="opt" value="C"> <span id="oc"></span></label>
+        <label><input type="radio" name="opt" value="D"> <span id="od"></span></label>
+    </div>
+
+    <div style="margin-top:12px;" class="row">
+        <button class="btn" id="prevBtn">Zurück</button>
+        <button class="btn primary" id="nextBtn">Weiter</button>
+        <button class="btn danger" id="finishBtn">Abschließen</button>
+    </div>
+
+    <p class="small" id="msg"></p>
+</div>
+
+<script type="module">
+    import { api, nav } from "/assets/common.js";
+
+    const quizId = Number(localStorage.getItem("quizId"));
+    const anonToken = localStorage.getItem("anonToken");
+    let durationMinutes = Number(localStorage.getItem("durationMinutes") || "10");
+
+    if (!quizId || !anonToken) {
+      nav("/student/join.html");
+    }
+
+    let quiz, idx = 0;
+    const chosen = new Map(); // questionId -> "A/B/C/D"
+
+    function render() {
+      const q = quiz.questions[idx];
+      qText.textContent = `Frage ${idx+1}: ${q.text}`;
+      oa.textContent = q.optionA; ob.textContent = q.optionB; oc.textContent = q.optionC; od.textContent = q.optionD;
+
+      const c = chosen.get(q.id);
+      document.querySelectorAll("input[name=opt]").forEach(r => r.checked = (r.value === c));
+
+      prevBtn.disabled = idx === 0;
+      nextBtn.disabled = idx === quiz.questions.length - 1;
+    }
+
+    document.querySelectorAll("input[name=opt]").forEach(r => {
+      r.addEventListener("change", () => {
+        const q = quiz.questions[idx];
+        chosen.set(q.id, r.value);
+      });
+    });
+
+    prevBtn.onclick = () => { idx = Math.max(0, idx-1); render(); };
+    nextBtn.onclick = () => { idx = Math.min(quiz.questions.length-1, idx+1); render(); };
+
+    async function submit() {
+      msg.textContent = "";
+      try {
+        const answers = quiz.questions.map(q => ({
+          questionId: q.id,
+          chosenOption: chosen.get(q.id) || ""
+        }));
+
+        // Minimal: erzwingen, dass jede Frage beantwortet ist
+        if (answers.some(a => !a.chosenOption)) {
+          msg.textContent = "Bitte alle Fragen beantworten.";
+          return;
+        }
+
+        const res = await api("/api/student/submit", {
+          method: "POST",
+          body: JSON.stringify({ anonToken, answers })
+        });
+
+        localStorage.setItem("lastResult", JSON.stringify(res));
+        nav("/student/result.html");
+      } catch(e) { msg.textContent = e.message; }
+    }
+
+    finishBtn.onclick = submit;
+
+    // Timer
+    let remaining = durationMinutes * 60;
+    function tick() {
+      const m = String(Math.floor(remaining/60)).padStart(2,"0");
+      const s = String(remaining%60).padStart(2,"0");
+      t.textContent = `${m}:${s}`;
+      remaining--;
+      if (remaining < 0) submit();
+      else setTimeout(tick, 1000);
+    }
+
+    (async () => {
+      quiz = await api(`/api/student/quiz/${quizId}`);
+      title.textContent = quiz.title;
+      durationMinutes = quiz.durationMinutes || durationMinutes;
+      localStorage.setItem("durationMinutes", String(durationMinutes));
+      render();
+      tick();
+    })();
+</script>
+</body>
+</html>

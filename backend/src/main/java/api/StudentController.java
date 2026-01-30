@@ -1,4 +1,4 @@
-// Summary: Schüler-Endpunkte: PIN-Join, Quiz laden, Antworten abgeben, Sofortauswertung.
+// Summary: Schüler-Endpunkte: PIN-Join, Quiz laden, Antworten abgeben, Ergebnis.
 package api;
 
 import domain.*;
@@ -32,10 +32,10 @@ public class StudentController {
     }
 
     public record JoinReq(@NotBlank String pin) {}
-    public record JoinRes(String anonToken, long quizId, String quizTitle) {}
+    public record JoinRes(String anonToken, long quizId, String quizTitle, int durationMinutes) {}
 
     public record PublicQuestion(long id, String text, String optionA, String optionB, String optionC, String optionD) {}
-    public record QuizRes(long quizId, String title, List<PublicQuestion> questions) {}
+    public record QuizRes(long quizId, String title, int durationMinutes, List<PublicQuestion> questions) {}
 
     public record SubmitAnswer(long questionId, @NotBlank String chosenOption) {}
     public record SubmitReq(@NotBlank String anonToken, List<SubmitAnswer> answers) {}
@@ -49,7 +49,7 @@ public class StudentController {
 
         String token = pinTokenService.newAnonToken(32);
         attemptRepo.save(new Attempt(quiz, token));
-        return new JoinRes(token, quiz.getId(), quiz.getTitle());
+        return new JoinRes(token, quiz.getId(), quiz.getTitle(), quiz.getDurationMinutes());
     }
 
     @GetMapping("/quiz/{quizId}")
@@ -58,7 +58,7 @@ public class StudentController {
         List<PublicQuestion> qs = questionRepo.findByQuizId(quizId).stream()
                 .map(q -> new PublicQuestion(q.getId(), q.getText(), q.getOptionA(), q.getOptionB(), q.getOptionC(), q.getOptionD()))
                 .toList();
-        return new QuizRes(quiz.getId(), quiz.getTitle(), qs);
+        return new QuizRes(quiz.getId(), quiz.getTitle(), quiz.getDurationMinutes(), qs);
     }
 
     @PostMapping("/submit")

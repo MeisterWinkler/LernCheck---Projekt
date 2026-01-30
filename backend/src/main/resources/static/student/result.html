@@ -1,0 +1,42 @@
+<!-- Summary: Ergebnisanzeige + Link auf adaptive Wiederholungsfragen. -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Ergebnis</title>
+    <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<div class="topbar">
+    <h1>Ergebnis</h1>
+    <a href="/">Start</a>
+</div>
+
+<div class="card" style="width:auto;">
+    <p><b>Richtig:</b> <span id="c"></span> / <span id="t"></span></p>
+    <p><b>Falsche Fragen IDs:</b> <span id="w"></span></p>
+
+    <div class="row">
+        <button class="btn primary" id="repeatBtn">Wiederholen (adaptive)</button>
+        <button class="btn" onclick="location.href='/student/join.html'">Neues Quiz</button>
+    </div>
+</div>
+
+<script type="module">
+    import { api } from "/assets/common.js";
+
+    const quizId = Number(localStorage.getItem("quizId"));
+    const res = JSON.parse(localStorage.getItem("lastResult") || "null");
+    if (!res) location.href = "/student/join.html";
+
+    c.textContent = res.correct;
+    t.textContent = res.total;
+    w.textContent = res.wrongQuestionIds.join(", ");
+
+    repeatBtn.onclick = async () => {
+      const qs = await api(`/api/student/adaptive/${quizId}?n=5`);
+      alert("Adaptive Fragen (IDs): " + qs.map(q => q.id).join(", "));
+    };
+</script>
+</body>
+</html>

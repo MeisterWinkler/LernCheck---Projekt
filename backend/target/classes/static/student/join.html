@@ -1,0 +1,40 @@
+<!-- Summary: Schüler: Einladungscode eingeben und Quiz beitreten. -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Quiz beitreten</title>
+    <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<div class="topbar">
+    <h1>Quiz beitreten</h1>
+    <a href="/">Start</a>
+</div>
+
+<label>Einladungscode</label>
+<input id="pin" placeholder="z.B. 471103">
+<div style="margin-top:12px;">
+    <button class="btn primary" id="joinBtn">Beitreten</button>
+</div>
+
+<p class="small" id="msg"></p>
+
+<script type="module">
+    import { api, nav } from "/assets/common.js";
+
+    const msg = document.getElementById("msg");
+
+    document.getElementById("joinBtn").onclick = async () => {
+      msg.textContent = "";
+      try {
+        const res = await api("/api/student/join", { method:"POST", body: JSON.stringify({ pin: pin.value }) });
+        localStorage.setItem("anonToken", res.anonToken);
+        localStorage.setItem("quizId", String(res.quizId));
+        localStorage.setItem("durationMinutes", String(res.durationMinutes));
+        nav("/student/quiz.html");
+      } catch(e) { msg.textContent = e.message; }
+    };
+</script>
+</body>
+</html>

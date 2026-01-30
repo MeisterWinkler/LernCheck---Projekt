@@ -1,25 +1,27 @@
+<!-- Summary: Einstieg: Lehrer-Login oder Schüler-Code-Eingabe. -->
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
     <title>LernCheck</title>
+    <link rel="stylesheet" href="/assets/app.css">
 </head>
 <body>
+<h1>LernCheck</h1>
+<p class="small">Wähle deinen Bereich.</p>
 
-<h1>LernCheck 🚀</h1>
+<div class="row">
+    <div class="card">
+        <h3>Lehrer</h3>
+        <p>Login & Verwaltung</p>
+        <button class="btn primary" onclick="location.href='/teacher/login.html'">Zum Lehrerbereich</button>
+    </div>
 
-<button onclick="loadTeachers()">API Test</button>
-
-<pre id="out"></pre>
-
-<script>
-    function loadTeachers() {
-      fetch("/api/teachers")
-        .then(r => r.json())
-        .then(d => document.getElementById("out").innerText =
-          JSON.stringify(d, null, 2));
-    }
-</script>
-
+    <div class="card">
+        <h3>Schüler</h3>
+        <p>Quiz beitreten</p>
+        <button class="btn primary" onclick="location.href='/student/join.html'">Zum Schülerbereich</button>
+    </div>
+</div>
 </body>
 </html>

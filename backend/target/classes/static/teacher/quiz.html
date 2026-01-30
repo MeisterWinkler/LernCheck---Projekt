@@ -1,0 +1,107 @@
+<!-- Summary: Quiz-Detail: Einladungscode, Start/Stop, PIN neu, Fragen hinzufügen, Heatmap-Link. -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Quiz</title>
+    <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<div class="topbar">
+    <h1 id="title">Quiz</h1>
+    <a href="/teacher/dashboard.html">Dashboard</a>
+</div>
+
+<div class="card" style="width:auto;">
+    <p><b>Einladungscode:</b> <span id="pin">-</span></p>
+    <p><b>Status:</b> <span id="active">-</span></p>
+    <p><b>Dauer:</b> <span id="dur">-</span> Minuten</p>
+
+    <div class="row">
+        <button class="btn primary" id="startBtn">Starten</button>
+        <button class="btn" id="stopBtn">Stoppen</button>
+        <button class="btn" id="pinBtn">PIN neu</button>
+        <button class="btn" id="heatBtn">Heatmap</button>
+    </div>
+    <p class="small">Schüler gehen auf <b>/student/join.html</b> und geben den Code ein.</p>
+</div>
+
+<hr>
+
+<h2>Fragen hinzufügen</h2>
+<p class="small">Minimal-Editor: pro Klick wird eine Frage gespeichert (MC: A–D).</p>
+
+<label>Fragetext</label>
+<input id="text" placeholder="Was ist ...?">
+<label>Antwort A</label>
+<input id="a" placeholder="...">
+<label>Antwort B</label>
+<input id="b" placeholder="...">
+<label>Antwort C</label>
+<input id="c" placeholder="...">
+<label>Antwort D</label>
+<input id="d" placeholder="...">
+<label>Korrekt (A/B/C/D)</label>
+<input id="correct" placeholder="A">
+
+<div style="margin-top:12px;">
+    <button class="btn primary" id="addBtn">Frage speichern</button>
+</div>
+
+<p class="small" id="msg"></p>
+
+<script type="module">
+    import { api, qs } from "/assets/common.js";
+
+    const quizId = qs("quizId");
+    const msg = document.getElementById("msg");
+
+    async function refresh() {
+      const info = await api(`/api/teacher/quizzes/${quizId}`);
+      document.getElementById("title").textContent = info.title;
+      document.getElementById("pin").textContent = info.joinPin;
+      document.getElementById("active").textContent = info.active ? "AKTIV" : "INAKTIV";
+      document.getElementById("dur").textContent = info.durationMinutes;
+    }
+
+    document.getElementById("startBtn").onclick = async () => {
+      msg.textContent = "";
+      try { await api(`/api/teacher/quizzes/${quizId}/active?value=true`, { method:"PUT" }); await refresh(); }
+      catch(e){ msg.textContent = e.message; }
+    };
+
+    document.getElementById("stopBtn").onclick = async () => {
+      msg.textContent = "";
+      try { await api(`/api/teacher/quizzes/${quizId}/active?value=false`, { method:"PUT" }); await refresh(); }
+      catch(e){ msg.textContent = e.message; }
+    };
+
+    document.getElementById("pinBtn").onclick = async () => {
+      msg.textContent = "";
+      try { await api(`/api/teacher/quizzes/${quizId}/pin`, { method:"PUT" }); await refresh(); }
+      catch(e){ msg.textContent = e.message; }
+    };
+
+    document.getElementById("heatBtn").onclick = () => {
+      window.open(`/api/teacher/stats/heatmap/${quizId}`, "_blank");
+    };
+
+    document.getElementById("addBtn").onclick = async () => {
+      msg.textContent = "";
+      try {
+        await api(`/api/teacher/quizzes/${quizId}/questions`, {
+          method: "POST",
+          body: JSON.stringify([{
+            text: text.value, optionA: a.value, optionB: b.value, optionC: c.value, optionD: d.value,
+            correctOption: correct.value
+          }])
+        });
+        text.value = a.value = b.value = c.value = d.value = correct.value = "";
+        msg.textContent = "Frage gespeichert.";
+      } catch(e) { msg.textContent = e.message; }
+    };
+
+    refresh().catch(e => msg.textContent = e.message);
+</script>
+</body>
+</html>

@@ -1,0 +1,66 @@
+<!-- Summary: Lehrer-Dashboard: Klassen anzeigen/anlegen. -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<div class="topbar">
+    <h1>Deine Klassen</h1>
+    <div>
+        <a href="/">Start</a>
+        <button class="btn" id="logoutBtn">Logout</button>
+    </div>
+</div>
+
+<h2>Neue Klasse</h2>
+<input id="className" placeholder="z.B. FIA23b">
+<button class="btn primary" id="createBtn">Anlegen</button>
+<p class="small" id="msg"></p>
+
+<hr>
+
+<div class="row" id="cards"></div>
+
+<script type="module">
+    import { api, clearToken, nav } from "/assets/common.js";
+
+    const cards = document.getElementById("cards");
+    const msg = document.getElementById("msg");
+
+    document.getElementById("logoutBtn").onclick = () => {
+      clearToken();
+      nav("/teacher/login.html");
+    };
+
+    async function load() {
+      cards.innerHTML = "";
+      const classes = await api("/api/teacher/classes");
+      for (const c of classes) {
+        const el = document.createElement("div");
+        el.className = "card";
+        el.innerHTML = `
+          <h3>${c.name}</h3>
+          <p class="small">ID: ${c.id}</p>
+          <button class="btn primary">Öffnen</button>
+        `;
+        el.querySelector("button").onclick = () => nav(`/teacher/class.html?classId=${c.id}`);
+        cards.appendChild(el);
+      }
+    }
+
+    document.getElementById("createBtn").onclick = async () => {
+      msg.textContent = "";
+      try {
+        await api("/api/teacher/classes", { method:"POST", body: JSON.stringify({ name: className.value }) });
+        className.value = "";
+        await load();
+      } catch(e) { msg.textContent = e.message; }
+    };
+
+    load().catch(e => msg.textContent = e.message);
+</script>
+</body>
+</html>

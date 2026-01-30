@@ -1,0 +1,73 @@
+<!-- Summary: Lehrer-Login/Register (JWT wird gespeichert). -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Lehrer Login</title>
+    <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<div class="topbar">
+    <h1>Lehrer Login</h1>
+    <a href="/">Start</a>
+</div>
+
+<h2>Login</h2>
+<label>Email</label>
+<input id="lemail" placeholder="lehrer@schule.de">
+<label>Passwort</label>
+<input id="lpass" type="password" placeholder="••••••••">
+<div style="margin-top:12px;">
+    <button class="btn primary" id="loginBtn">Login</button>
+</div>
+
+<hr>
+
+<h2>Registrieren</h2>
+<label>Email</label>
+<input id="remail" placeholder="lehrer@schule.de">
+<label>Name</label>
+<input id="rname" placeholder="Max Mustermann">
+<label>Passwort</label>
+<input id="rpass" type="password" placeholder="••••••••">
+<div style="margin-top:12px;">
+    <button class="btn" id="regBtn">Registrieren</button>
+</div>
+
+<p class="small" id="msg"></p>
+
+<script type="module">
+    import { api, setToken, nav } from "/assets/common.js";
+
+    const msg = document.getElementById("msg");
+
+    document.getElementById("loginBtn").onclick = async () => {
+      msg.textContent = "";
+      try {
+        const data = await api("/api/auth/login", {
+          method: "POST",
+          body: JSON.stringify({ email: lemail.value, password: lpass.value })
+        });
+        setToken(data.token);
+        nav("/teacher/dashboard.html");
+      } catch (e) {
+        msg.textContent = e.message;
+      }
+    };
+
+    document.getElementById("regBtn").onclick = async () => {
+      msg.textContent = "";
+      try {
+        const data = await api("/api/auth/register", {
+          method: "POST",
+          body: JSON.stringify({ email: remail.value, displayName: rname.value, password: rpass.value })
+        });
+        setToken(data.token);
+        nav("/teacher/dashboard.html");
+      } catch (e) {
+        msg.textContent = e.message;
+      }
+    };
+</script>
+</body>
+</html>

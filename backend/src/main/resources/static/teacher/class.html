@@ -1,0 +1,74 @@
+<!-- Summary: Quizzes einer Klasse anzeigen/anlegen. -->
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Klasse</title>
+    <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<div class="topbar">
+    <h1 id="title">Klasse</h1>
+    <div>
+        <a href="/teacher/dashboard.html">Zurück</a>
+    </div>
+</div>
+
+<h2>Neues Quiz</h2>
+<label>Titel</label>
+<input id="qtitle" placeholder="z.B. Subnetting">
+<label>Dauer (Minuten)</label>
+<input id="qdur" type="number" min="1" max="180" value="10">
+<div style="margin-top:12px;">
+    <button class="btn primary" id="createQuizBtn">Quiz anlegen</button>
+</div>
+<p class="small" id="msg"></p>
+
+<hr>
+
+<div class="row" id="cards"></div>
+
+<script type="module">
+    import { api, qs, nav } from "/assets/common.js";
+
+    const classId = qs("classId");
+    const msg = document.getElementById("msg");
+    const cards = document.getElementById("cards");
+
+    if (!classId) msg.textContent = "Fehler: classId fehlt in URL.";
+
+    async function load() {
+      cards.innerHTML = "";
+      const quizzes = await api(`/api/teacher/classes/${classId}/quizzes`);
+      document.getElementById("title").textContent = `Klasse ${classId} – Quizzes`;
+
+      for (const q of quizzes) {
+        const el = document.createElement("div");
+        el.className = "card";
+        el.innerHTML = `
+          <h3>${q.title}</h3>
+          <p class="small">QuizID: ${q.id}</p>
+          <p class="small">Aktiv: ${q.active ? "Ja" : "Nein"}</p>
+          <button class="btn primary">Öffnen</button>
+        `;
+        el.querySelector("button").onclick = () => nav(`/teacher/quiz.html?quizId=${q.id}`);
+        cards.appendChild(el);
+      }
+    }
+
+    document.getElementById("createQuizBtn").onclick = async () => {
+      msg.textContent = "";
+      try {
+        await api(`/api/teacher/classes/${classId}/quizzes`, {
+          method: "POST",
+          body: JSON.stringify({ title: qtitle.value, durationMinutes: Number(qdur.value) })
+        });
+        qtitle.value = "";
+        await load();
+      } catch (e) { msg.textContent = e.message; }
+    };
+
+    load().catch(e => msg.textContent = e.message);
+</script>
+</body>
+</html>
