@@ -10,7 +10,7 @@
 <div class="topbar">
     <h1>Deine Klassen</h1>
     <div>
-        <a href="/">Start</a>
+        <a href="/static/teacher-pagesr-pages/dashboard.html">Home</a>
         <button class="btn" id="logoutBtn">Logout</button>
     </div>
 </div>
@@ -25,7 +25,8 @@
 <div class="row" id="cards"></div>
 
 <script type="module">
-    import { api, clearToken, nav } from "/assets/common.js";
+    import { api, clearToken, nav, requireTeacherAuth } from "/assets/common.js";
+    requireTeacherAuth();
 
     const cards = document.getElementById("cards");
     const msg = document.getElementById("msg");

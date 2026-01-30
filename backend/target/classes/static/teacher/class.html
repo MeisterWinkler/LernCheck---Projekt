@@ -10,7 +10,7 @@
 <div class="topbar">
     <h1 id="title">Klasse</h1>
     <div>
-        <a href="/teacher/dashboard.html">Zurück</a>
+        <a href="/static/teacher-pagesr-pages/dashboard.html">Zurück</a>
     </div>
 </div>
 
@@ -29,7 +29,8 @@
 <div class="row" id="cards"></div>
 
 <script type="module">
-    import { api, qs, nav } from "/assets/common.js";
+    import { api, clearToken, nav, requireTeacherAuth } from "/assets/common.js";
+    requireTeacherAuth();
 
     const classId = qs("classId");
     const msg = document.getElementById("msg");

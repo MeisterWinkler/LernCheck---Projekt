@@ -1,4 +1,4 @@
-// Summary: Registrierung/Login für Lehrkräfte (JWT).
+// Summary: Registrierung/Login für Lehrkräfte (JWT). Setzt JWT zusätzlich als HttpOnly Cookie (LC_TOKEN).
 package api;
 
 import domain.Teacher;
@@ -9,12 +9,17 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
+
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
+
+    private static final String COOKIE_NAME = "LC_TOKEN";
 
     private final TeacherRepo teacherRepo;
     private final JwtService jwtService;
@@ -30,17 +35,55 @@ public class AuthController {
     public record AuthRes(String token) {}
 
     @PostMapping("/register")
-    public AuthRes register(@Valid @RequestBody RegisterReq req) {
-        teacherRepo.findByEmail(req.email()).ifPresent(t -> { throw new IllegalArgumentException("Email exists"); });
+    public AuthRes register(@Valid @RequestBody RegisterReq req, HttpServletResponse response) {
+        teacherRepo.findByEmail(req.email()).ifPresent(t -> {
+            throw new IllegalArgumentException("Email exists");
+        });
+
         Teacher t = new Teacher(req.email(), req.displayName(), encoder.encode(req.password()));
         teacherRepo.save(t);
-        return new AuthRes(jwtService.issueToken(t.getId(), t.getEmail()));
+
+        String token = jwtService.issueToken(t.getId(), t.getEmail());
+        setJwtCookie(response, token);
+
+        return new AuthRes(token);
     }
 
     @PostMapping("/login")
-    public AuthRes login(@Valid @RequestBody LoginReq req) {
-        Teacher t = teacherRepo.findByEmail(req.email()).orElseThrow(() -> new IllegalArgumentException("Invalid login"));
-        if (!encoder.matches(req.password(), t.getPasswordHash())) throw new IllegalArgumentException("Invalid login");
-        return new AuthRes(jwtService.issueToken(t.getId(), t.getEmail()));
+    public AuthRes login(@Valid @RequestBody LoginReq req, HttpServletResponse response) {
+        Teacher t = teacherRepo.findByEmail(req.email())
+                .orElseThrow(() -> new IllegalArgumentException("Invalid login"));
+
+        if (!encoder.matches(req.password(), t.getPasswordHash())) {
+            throw new IllegalArgumentException("Invalid login");
+        }
+
+        String token = jwtService.issueToken(t.getId(), t.getEmail());
+        setJwtCookie(response, token);
+
+        return new AuthRes(token);
+    }
+
+    // Optional aber empfohlen: Logout löscht den Cookie serverseitig
+    @PostMapping("/logout")
+    public void logout(HttpServletResponse response) {
+        Cookie cookie = new Cookie(COOKIE_NAME, "");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false); // lokal; in prod true (https)
+        cookie.setPath("/");
+        cookie.setMaxAge(0); // sofort löschen
+        response.addCookie(cookie);
+    }
+
+    private void setJwtCookie(HttpServletResponse response, String token) {
+        Cookie cookie = new Cookie(COOKIE_NAME, token);
+        cookie.setHttpOnly(true);
+        cookie.setSecure(false); // lokal; in prod true (https)
+        cookie.setPath("/");
+
+        // 8 Stunden gültig (kannst du ändern)
+        cookie.setMaxAge(60 * 60 * 8);
+
+        response.addCookie(cookie);
     }
 }

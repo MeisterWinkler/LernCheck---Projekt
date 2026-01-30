@@ -9,7 +9,7 @@
 <body>
 <div class="topbar">
     <h1 id="title">Quiz</h1>
-    <a href="/teacher/dashboard.html">Dashboard</a>
+    <a href="/static/teacher-pagesr-pages/dashboard.html">Dashboard</a>
 </div>
 
 <div class="card" style="width:auto;">
@@ -51,7 +51,8 @@
 <p class="small" id="msg"></p>
 
 <script type="module">
-    import { api, qs } from "/assets/common.js";
+    import { api, clearToken, nav, requireTeacherAuth } from "/assets/common.js";
+    requireTeacherAuth();
 
     const quizId = qs("quizId");
     const msg = document.getElementById("msg");

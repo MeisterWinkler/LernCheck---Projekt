@@ -25,3 +25,11 @@ export function qs(name) {
 }
 
 export function nav(url) { window.location.href = url; }
+
+export function requireTeacherAuth() {
+  const t = getToken();
+  if (!t) {
+    window.location.href = "/teacher/login.html";
+  }
+}
+
