@@ -12,17 +12,29 @@
     <a href="index.html"><strong>Lerncheck</strong></a>
     <small>Adaptives, anonymes Quiz-System</small>
 </header>
-
+<form name="testForm">
 <main>
     <a href="student-quiz.html">Test</a>
     <section class="card">
         <h1>Willkommen</h1>
         <p>Wähle den Bereich:</p>
         <div class="row">
+            <form  action="/student">
+                <button type="submit"></button>
+            </form>
+
+<script>
+    function getString(){
+    return fetch("test/String");
+    }
+</script>
+            <div><input type="text"><script> getString();</script></div>
+
             <a href="teacher-login.html"><button>Lehrerbereich</button></a>
             <a href="student-join.html"><button class="secondary">Schülerbereich</button></a>
         </div>
     </section>
 </main>
+</form>
 </body>
 </html>
