@@ -1,4 +1,3 @@
-// Summary: Erzeugt PINs und anonyme Tokens für Schüler-Teilnahme.
 package service;
 
 import org.springframework.stereotype.Service;
@@ -7,7 +6,6 @@ import java.security.SecureRandom;
 
 @Service
 public class PinTokenService {
-
     private final SecureRandom random = new SecureRandom();
     private static final String DIGITS = "0123456789";
     private static final String ALPHANUM = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

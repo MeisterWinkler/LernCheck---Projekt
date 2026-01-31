@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>LernCheck – Quiz Run</title>
+    <link rel="stylesheet" href="/assets/app.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<div class="topbar">
+    <h1 id="title">Quiz Run</h1>
+    <div class="row" style="align-items:center;">
+        <a class="btn" href="/teacher/class.html?classId=" id="backBtn">Zurück</a>
+        <button class="btn danger" id="logoutBtn">Logout</button>
+    </div>
+</div>
+
+<p class="small" id="msg"></p>
+
+<div class="row" style="align-items:flex-start;">
+    <!-- LEFT: Run Control -->
+    <div class="card" style="width:auto; min-width: 320px;">
+        <h2 style="margin-top:0;">Status</h2>
+
+        <p><b>Einladungscode:</b> <span id="pin">—</span></p>
+        <p><b>Status:</b> <span id="status">—</span></p>
+
+        <label>Dauer (Minuten)</label>
+        <input id="dur" type="number" min="1" max="180" value="10" />
+
+        <div class="row" style="margin-top: 12px;">
+            <button class="btn primary" id="startBtn">Starten</button>
+            <button class="btn" id="stopBtn">Stoppen</button>
+            <button class="btn" id="restartBtn">Erneut starten</button>
+        </div>
+
+        <hr />
+
+        <p class="small">
+            Schüler gehen auf <b>/student/join.html</b> und geben den Einladungscode ein.
+        </p>
+
+        <div class="row" style="margin-top: 12px;">
+            <button class="btn" id="statsBtn">Auswertung</button>
+            <button class="btn" id="fbBtn">Feedback</button>
+        </div>
+    </div>
+
+    <!-- RIGHT: Stats / Feedback -->
+    <div style="flex:1; min-width: 380px;">
+        <div class="card wide" id="statsBox" style="display:none; width:auto;">
+            <h2 style="margin-top:0;">Auswertung pro Frage</h2>
+            <div id="statsWrap"></div>
+            <canvas id="chart" style="max-width: 920px; margin-top: 16px;"></canvas>
+        </div>
+
+        <div class="card wide" id="fbBox" style="display:none; width:auto;">
+            <h2 style="margin-top:0;">Schülerfeedback</h2>
+            <div id="fbWrap"></div>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+    import { api, clearToken, nav, requireTeacherAuth, qs } from "/assets/common.js";
+    requireTeacherAuth();
+
+    const runId = qs("runId");
+    const classId = qs("classId"); // optional für "Zurück"
+    const msg = document.getElementById("msg");
+
+    const title = document.getElementById("title");
+    const pinEl = document.getElementById("pin");
+    const statusEl = document.getElementById("status");
+    const durEl = document.getElementById("dur");
+
+    const startBtn = document.getElementById("startBtn");
+    const stopBtn = document.getElementById("stopBtn");
+    const restartBtn = document.getElementById("restartBtn");
+
+    const statsBtn = document.getElementById("statsBtn");
+    const fbBtn = document.getElementById("fbBtn");
+
+    const statsBox = document.getElementById("statsBox");
+    const fbBox = document.getElementById("fbBox");
+    const statsWrap = document.getElementById("statsWrap");
+    const fbWrap = document.getElementById("fbWrap");
+
+    const backBtn = document.getElementById("backBtn");
+    backBtn.href = classId ? `/teacher/class.html?classId=${encodeURIComponent(classId)}` : `/teacher/dashboard.html`;
+
+    document.getElementById("logoutBtn").onclick = () => {
+      clearToken();
+      nav("/teacher/login.html");
+    };
+
+    if (!runId) {
+      msg.textContent = "Fehler: runId fehlt in der URL.";
+      throw new Error("runId missing");
+    }
+
+    function show(text, type="info") {
+      msg.textContent = text;
+      msg.dataset.type = type;
+    }
+
+    function setUiState(active) {
+      statusEl.textContent = active ? "AKTIV" : "INAKTIV";
+      startBtn.disabled = active;
+      stopBtn.disabled = !active;
+    }
+
+    async function refresh() {
+      try {
+        const info = await api(`/api/teacher/runs/${runId}`);
+        title.textContent = info.quizTitle ? `Run: ${info.quizTitle}` : `Run #${runId}`;
+        pinEl.textContent = info.joinPin || "—";
+        durEl.value = info.durationMinutes ?? 10;
+        setUiState(!!info.active);
+        show("Run geladen.", "ok");
+      } catch (e) {
+        show(e.message, "error");
+      }
+    }
+
+    startBtn.onclick = async () => {
+      try {
+        show("Starte...", "info");
+        const durationMinutes = Number(durEl.value || "10");
+        await api(`/api/teacher/runs/${runId}/start`, {
+          method: "POST",
+          body: JSON.stringify({ durationMinutes })
+        });
+        await refresh();
+      } catch (e) {
+        show(e.message, "error");
+      }
+    };
+
+    stopBtn.onclick = async () => {
+      try {
+        show("Stoppe...", "info");
+        await api(`/api/teacher/runs/${runId}/stop`, { method: "POST" });
+        await refresh();
+      } catch (e) {
+        show(e.message, "error");
+      }
+    };
+
+    restartBtn.onclick = async () => {
+      try {
+        if (!confirm("Run wirklich zurücksetzen und neu starten? Alle bisherigen Attempts/Auswertung werden zurückgesetzt.")) return;
+        show("Starte neu...", "info");
+        const durationMinutes = Number(durEl.value || "10");
+        await api(`/api/teacher/runs/${runId}/restart`, {
+          method: "POST",
+          body: JSON.stringify({ durationMinutes })
+        });
+        await refresh();
+      } catch (e) {
+        show(e.message, "error");
+      }
+    };
+
+    // ---- Stats (Tabelle + Balken) ----
+    let chartInstance = null;
+
+    statsBtn.onclick = async () => {
+      statsBox.style.display = "block";
+      fbBox.style.display = "none";
+      statsWrap.innerHTML = "";
+      try {
+        show("Lade Auswertung...", "info");
+        const data = await api(`/api/teacher/runs/${runId}/stats`);
+
+        const rows = (data.stats || []);
+        statsWrap.innerHTML = `
+          <p class="small">Abgeschlossene Versuche: <b>${data.finishedAttempts ?? 0}</b></p>
+          ${
+            rows.length === 0
+            ? `<p class="badge">Noch keine Daten vorhanden.</p>`
+            : `
+            <table>
+              <thead>
+                <tr><th>#</th><th>Frage</th><th>% richtig</th><th>Ampel</th></tr>
+              </thead>
+              <tbody>
+                ${rows.map(r => {
+                  const pct = Math.round(r.correctPercent ?? 0);
+                  const ok = pct >= 50;
+                  return `
+                    <tr>
+                      <td>${r.pos}</td>
+                      <td>${escapeHtml(r.text || "")}</td>
+                      <td>${pct}%</td>
+                      <td>${ok ? "🟩" : "🟥"}</td>
+                    </tr>`;
+                }).join("")}
+              </tbody>
+            </table>
+            `
+          }
+        `;
+
+        // Chart.js
+        const labels = rows.map(r => `F${r.pos}`);
+        const values = rows.map(r => Math.round(r.correctPercent ?? 0));
+        const ctx = document.getElementById("chart").getContext("2d");
+
+        if (chartInstance) chartInstance.destroy();
+
+        chartInstance = new Chart(ctx, {
+          type: "bar",
+          data: {
+            labels,
+            datasets: [{
+              label: "% richtig",
+              data: values
+            }]
+          },
+          options: {
+            responsive: true,
+            scales: {
+              y: {
+                min: 0,
+                max: 100,
+                ticks: { callback: (v) => v + "%" }
+              }
+            }
+          }
+        });
+
+        show("Auswertung geladen.", "ok");
+      } catch (e) {
+        show(e.message, "error");
+        statsWrap.innerHTML = `<div class="small">${escapeHtml(e.message)}</div>`;
+        // chart ggf. löschen
+        try { if (chartInstance) chartInstance.destroy(); } catch {}
+      }
+    };
+
+    // ---- Feedback ----
+    fbBtn.onclick = async () => {
+      fbBox.style.display = "block";
+      statsBox.style.display = "none";
+      fbWrap.innerHTML = "";
+
+      try {
+        show("Lade Feedback...", "info");
+        const data = await api(`/api/teacher/runs/${runId}/feedback`);
+        const items = data.items || [];
+
+        if (items.length === 0) {
+          fbWrap.innerHTML = `<p class="badge">Noch kein Feedback vorhanden.</p>`;
+          show("Feedback geladen.", "ok");
+          return;
+        }
+
+        fbWrap.innerHTML = items.map((it, idx) => `
+          <div class="card" style="width:auto; margin:10px 0;">
+            <div class="row" style="justify-content:space-between;">
+              <b>Feedback ${idx + 1}</b>
+              <span class="small">${escapeHtml(it.createdAt || "")}</span>
+            </div>
+            <p style="margin-bottom:0;">${escapeHtml(it.comment || "")}</p>
+          </div>
+        `).join("");
+
+        show("Feedback geladen.", "ok");
+      } catch (e) {
+        show(e.message, "error");
+        fbWrap.innerHTML = `<div class="small">${escapeHtml(e.message)}</div>`;
+      }
+    };
+
+    function escapeHtml(s) {
+      return (s ?? "")
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;");
+    }
+
+    // initial
+    refresh();
+</script>
+</body>
+</html>

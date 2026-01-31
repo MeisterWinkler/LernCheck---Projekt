@@ -1,4 +1,4 @@
-<!-- Summary: Maven-Konfiguration für Spring Boot Backend (Web, JPA, Security, Validation, JWT, H2). -->
+<!-- Summary: Maven-Konfiguration für Spring Boot Backend (Web, JPA, Security, Validation, JWT, MariaDB). -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -45,7 +45,14 @@
             <artifactId>spring-boot-starter-security</artifactId>
         </dependency>
 
-        <!-- H2 DB -->
+        <!-- MariaDB JDBC Driver (NEU) -->
+        <dependency>
+            <groupId>org.mariadb.jdbc</groupId>
+            <artifactId>mariadb-java-client</artifactId>
+            <version>3.4.1</version>
+        </dependency>
+
+        <!-- H2 DB (optional: kannst du später entfernen) -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>

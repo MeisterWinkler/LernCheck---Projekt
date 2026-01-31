@@ -1,4 +1,3 @@
-// Summary: Lehrkraft-Account (Login). Keine Schülerdaten im System.
 package domain;
 
 import jakarta.persistence.*;
@@ -7,28 +6,29 @@ import jakarta.persistence.*;
 @Table(name = "teachers")
 public class Teacher {
 
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, unique = true, length = 120)
-    private String email;
+    @Column(nullable = false, unique = true, length = 60)
+    private String username;
 
-    @Column(nullable = false, length = 80)
+    @Column(name = "display_name", nullable = false, length = 80)
     private String displayName;
 
-    @Column(nullable = false, length = 255)
+    @Column(name = "password_hash", nullable = false, length = 255)
     private String passwordHash;
 
     protected Teacher() {}
 
-    public Teacher(String email, String displayName, String passwordHash) {
-        this.email = email;
+    public Teacher(String username, String displayName, String passwordHash) {
+        this.username = username;
         this.displayName = displayName;
         this.passwordHash = passwordHash;
     }
 
     public Long getId() { return id; }
-    public String getEmail() { return email; }
+    public String getUsername() { return username; }
     public String getDisplayName() { return displayName; }
     public String getPasswordHash() { return passwordHash; }
 }

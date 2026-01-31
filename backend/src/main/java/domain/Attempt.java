@@ -1,6 +1,7 @@
 package domain;
 
 import jakarta.persistence.*;
+
 import java.time.Instant;
 
 @Entity
@@ -12,29 +13,34 @@ public class Attempt {
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
-    private Quiz quiz;
+    @JoinColumn(name = "run_id")
+    private QuizRun run;
 
-    @Column(nullable = false, length = 64, unique = true)
+    @Column(name = "anon_token", nullable = false, length = 64, unique = true)
     private String anonToken;
 
     @Column(nullable = false)
     private Instant startedAt = Instant.now();
+
+    private Instant submittedAt;
 
     @Column(nullable = false)
     private boolean finished = false;
 
     protected Attempt() {}
 
-    public Attempt(Quiz quiz, String anonToken) {
-        this.quiz = quiz;
+    public Attempt(QuizRun run, String anonToken) {
+        this.run = run;
         this.anonToken = anonToken;
     }
 
     public Long getId() { return id; }
-    public Quiz getQuiz() { return quiz; }
+    public QuizRun getRun() { return run; }
     public String getAnonToken() { return anonToken; }
     public Instant getStartedAt() { return startedAt; }
+    public Instant getSubmittedAt() { return submittedAt; }
     public boolean isFinished() { return finished; }
 
+    public void setSubmittedAt(Instant submittedAt) { this.submittedAt = submittedAt; }
     public void setFinished(boolean finished) { this.finished = finished; }
 }

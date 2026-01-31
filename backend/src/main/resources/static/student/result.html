@@ -1,6 +1,5 @@
-<!-- Summary: Ergebnisanzeige + Link auf adaptive Wiederholungsfragen. -->
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
     <meta charset="UTF-8" />
     <title>Ergebnis</title>
@@ -9,34 +8,27 @@
 <body>
 <div class="topbar">
     <h1>Ergebnis</h1>
-    <a href="/">Start</a>
+    <a class="badge" href="/student/join.html">Neues Quiz</a>
 </div>
 
-<div class="card" style="width:auto;">
-    <p><b>Richtig:</b> <span id="c"></span> / <span id="t"></span></p>
-    <p><b>Falsche Fragen IDs:</b> <span id="w"></span></p>
-
-    <div class="row">
-        <button class="btn primary" id="repeatBtn">Wiederholen (adaptive)</button>
-        <button class="btn" onclick="location.href='/student/join.html'">Neues Quiz</button>
-    </div>
+<div class="card wide">
+    <div id="wrap"></div>
 </div>
 
 <script type="module">
-    import { api } from "/assets/common.js";
+    import { nav } from "/assets/common.js";
 
-    const quizId = Number(localStorage.getItem("quizId"));
     const res = JSON.parse(localStorage.getItem("lastResult") || "null");
-    if (!res) location.href = "/student/join.html";
+    if(!res) nav("/student/join.html");
 
-    c.textContent = res.correct;
-    t.textContent = res.total;
-    w.textContent = res.wrongQuestionIds.join(", ");
+    const reason = localStorage.getItem("finishReason") || "manual";
 
-    repeatBtn.onclick = async () => {
-      const qs = await api(`/api/student/adaptive/${quizId}?n=5`);
-      alert("Adaptive Fragen (IDs): " + qs.map(q => q.id).join(", "));
-    };
+    wrap.innerHTML = `
+      <p class="small">Abgabe: <b>${reason === "timeout" ? "Timer abgelaufen (Auto-Submit)" : "manuell"}</b></p>
+      <p><b>Fragen insgesamt:</b> ${res.totalQuestions}</p>
+      <p><b>Beantwortet:</b> ${res.answered}</p>
+      <p><b>Richtig:</b> ${res.correct}</p>
+    `;
 </script>
 </body>
 </html>

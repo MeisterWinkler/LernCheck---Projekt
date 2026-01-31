@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <title>Templates</title>
+    <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<div class="topbar">
+    <h1>Quiz Templates</h1>
+    <div class="row">
+        <a class="badge" href="/teacher/dashboard.html">Zurück</a>
+        <button class="btn primary" id="newBtn">Neues Template erstellen</button>
+    </div>
+</div>
+
+<div class="card wide">
+    <h2>Templates verwenden</h2>
+    <p class="small">Ein Template ist global pro Lehrer und kann beliebigen Klassen zugewiesen werden.</p>
+    <div class="msg small" id="msg"></div>
+</div>
+
+<hr>
+<div class="row" id="list"></div>
+
+<script type="module">
+    import { api, nav, requireTeacherAuth } from "/assets/common.js";
+    if(!requireTeacherAuth()) {}
+
+    newBtn.onclick = () => nav("/teacher/template-editor.html");
+
+    async function load() {
+      list.innerHTML = "";
+      const templates = await api("/api/teacher/templates");
+      for (const t of templates) {
+        const el = document.createElement("div");
+        el.className = "card";
+        el.innerHTML = `
+          <h3>${t.title}</h3>
+          <p class="small">ID: ${t.id}</p>
+          <p class="small">Fragen: ${t.questionCount}</p>
+          <div class="row">
+            <button class="btn primary">Zuweisen</button>
+            <button class="btn">Details</button>
+          </div>
+        `;
+        el.querySelectorAll("button")[0].onclick = () => nav(`/teacher/template-editor.html?templateId=${t.id}&mode=assign`);
+        el.querySelectorAll("button")[1].onclick = () => nav(`/teacher/template-editor.html?templateId=${t.id}&mode=view`);
+        list.appendChild(el);
+      }
+    }
+
+    load().catch(e => msg.textContent = e.message);
+</script>
+</body>
+</html>

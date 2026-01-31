@@ -1,6 +1,5 @@
-<!-- Summary: Schüler: Einladungscode eingeben und Quiz beitreten. -->
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
     <meta charset="UTF-8" />
     <title>Quiz beitreten</title>
@@ -8,32 +7,34 @@
 </head>
 <body>
 <div class="topbar">
-    <h1>Quiz beitreten</h1>
-    <a href="/">Start</a>
+    <h1>Schüler – Quiz beitreten</h1>
+    <a class="badge" href="/teacher/login.html">Lehrerbereich</a>
 </div>
 
-<label>Einladungscode</label>
-<input id="pin" placeholder="z.B. 471103">
-<div style="margin-top:12px;">
-    <button class="btn primary" id="joinBtn">Beitreten</button>
+<div class="card wide">
+    <label>Einladungscode (PIN)</label>
+    <input id="pin" placeholder="z.B. 123456">
+    <div class="row" style="margin-top:12px;">
+        <button class="btn primary" id="joinBtn">Beitreten</button>
+    </div>
+    <div class="msg small" id="msg"></div>
 </div>
-
-<p class="small" id="msg"></p>
 
 <script type="module">
     import { api, nav } from "/assets/common.js";
 
-    const msg = document.getElementById("msg");
-
-    document.getElementById("joinBtn").onclick = async () => {
+    joinBtn.onclick = async () => {
       msg.textContent = "";
-      try {
-        const res = await api("/api/student/join", { method:"POST", body: JSON.stringify({ pin: pin.value }) });
+      try{
+        const res = await api("/api/student/join", {
+          method:"POST",
+          body: JSON.stringify({ pin: pin.value })
+        });
         localStorage.setItem("anonToken", res.anonToken);
-        localStorage.setItem("quizId", String(res.quizId));
-        localStorage.setItem("durationMinutes", String(res.durationMinutes));
+        localStorage.setItem("runId", String(res.runId));
+        localStorage.setItem("endsAt", res.endsAt);
         nav("/student/quiz.html");
-      } catch(e) { msg.textContent = e.message; }
+      } catch(e){ msg.textContent = e.message; }
     };
 </script>
 </body>

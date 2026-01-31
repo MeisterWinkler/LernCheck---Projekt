@@ -1,8 +1,8 @@
-// Summary: Security: /api/teacher/** braucht JWT; /api/student/** bleibt anonym.
 package security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
@@ -29,20 +29,19 @@ public class SecurityConfig {
         http.csrf(csrf -> csrf.disable());
 
         http.authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/auth/**").permitAll()
-                .requestMatchers("/api/student/**").permitAll()
                 .requestMatchers("/assets/**").permitAll()
                 .requestMatchers("/student/**").permitAll()
-                .requestMatchers("/h2-console/**").permitAll()
+                .requestMatchers("/api/student/**").permitAll()
+                .requestMatchers("/api/auth/**").permitAll()
+
+                .requestMatchers("/teacher/login.html").permitAll()
+                .requestMatchers("/teacher/**").authenticated()
+
                 .requestMatchers("/api/teacher/**").authenticated()
                 .anyRequest().permitAll()
         );
 
         http.addFilterBefore(new JwtFilter(jwtService), UsernamePasswordAuthenticationFilter.class);
-
-        // H2 console
-        http.headers(headers -> headers.frameOptions(frame -> frame.disable()));
-
         return http.build();
     }
 
@@ -58,10 +57,8 @@ public class SecurityConfig {
             String path = request.getRequestURI();
 
             try {
-                String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
-                if (auth != null && auth.startsWith("Bearer ")) {
-                    String token = auth.substring(7).trim();
-
+                String token = extractToken(request);
+                if (token != null) {
                     long teacherId = jwtService.parseTeacherId(token);
 
                     AbstractAuthenticationToken authentication = new AbstractAuthenticationToken(
@@ -79,16 +76,33 @@ public class SecurityConfig {
                 chain.doFilter(request, response);
 
             } catch (Exception e) {
-                // Nur API-Teacher Endpunkte wirklich blocken.
-                // Sonst zerstörst du dir permitAll-Requests durch einen JWT-Parsing Fehler.
-                if (path.startsWith("/api/teacher")) {
+                // nur teacher paths hart blocken
+                if (path.startsWith("/api/teacher") || (path.startsWith("/teacher") && !path.equals("/teacher/login.html"))) {
                     response.sendError(401, "Unauthorized");
                 } else {
-                    // Für alles andere: kein Auth setzen und Request normal weiterlaufen lassen
                     org.springframework.security.core.context.SecurityContextHolder.clearContext();
                     chain.doFilter(request, response);
                 }
             }
+        }
+
+        private String extractToken(HttpServletRequest request) {
+            // 1) Header
+            String auth = request.getHeader(HttpHeaders.AUTHORIZATION);
+            if (auth != null && auth.startsWith("Bearer ")) {
+                return auth.substring(7).trim();
+            }
+
+            // 2) Cookie (optional)
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie c : cookies) {
+                    if ("LC_TOKEN".equals(c.getName()) && c.getValue() != null && !c.getValue().isBlank()) {
+                        return c.getValue().trim();
+                    }
+                }
+            }
+            return null;
         }
     }
 }

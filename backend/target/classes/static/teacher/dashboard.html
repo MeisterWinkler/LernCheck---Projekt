@@ -1,6 +1,5 @@
-<!-- Summary: Lehrer-Dashboard: Klassen anzeigen/anlegen. -->
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
     <meta charset="UTF-8" />
     <title>Dashboard</title>
@@ -9,16 +8,20 @@
 <body>
 <div class="topbar">
     <h1>Deine Klassen</h1>
-    <div>
-        <a href="/static/teacher-pagesr-pages/dashboard.html">Home</a>
-        <button class="btn" id="logoutBtn">Logout</button>
+    <div class="row">
+        <button class="btn" id="templatesBtn">+ Quiz erstellen</button>
+        <button class="btn danger" id="logoutBtn">Logout</button>
     </div>
 </div>
 
-<h2>Neue Klasse</h2>
-<input id="className" placeholder="z.B. FIA23b">
-<button class="btn primary" id="createBtn">Anlegen</button>
-<p class="small" id="msg"></p>
+<div class="card wide">
+    <h2>Neue Klasse</h2>
+    <div class="row">
+        <input id="className" placeholder="z.B. FIA23b">
+        <button class="btn primary" id="createBtn">Anlegen</button>
+    </div>
+    <div class="msg small" id="msg"></div>
+</div>
 
 <hr>
 
@@ -26,15 +29,10 @@
 
 <script type="module">
     import { api, clearToken, nav, requireTeacherAuth } from "/assets/common.js";
-    requireTeacherAuth();
+    if(!requireTeacherAuth()) {}
 
-    const cards = document.getElementById("cards");
-    const msg = document.getElementById("msg");
-
-    document.getElementById("logoutBtn").onclick = () => {
-      clearToken();
-      nav("/teacher/login.html");
-    };
+    logoutBtn.onclick = () => { clearToken(); nav("/teacher/login.html"); };
+    templatesBtn.onclick = () => nav("/teacher/templates.html");
 
     async function load() {
       cards.innerHTML = "";
@@ -52,7 +50,7 @@
       }
     }
 
-    document.getElementById("createBtn").onclick = async () => {
+    createBtn.onclick = async () => {
       msg.textContent = "";
       try {
         await api("/api/teacher/classes", { method:"POST", body: JSON.stringify({ name: className.value }) });

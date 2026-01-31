@@ -1,6 +1,5 @@
-<!-- Summary: Quizzes einer Klasse anzeigen/anlegen. -->
 <!DOCTYPE html>
-<html>
+<html lang="de">
 <head>
     <meta charset="UTF-8" />
     <title>Klasse</title>
@@ -9,65 +8,46 @@
 <body>
 <div class="topbar">
     <h1 id="title">Klasse</h1>
-    <div>
-        <a href="/static/teacher-pagesr-pages/dashboard.html">Zurück</a>
+    <div class="row">
+        <a class="badge" href="/teacher/dashboard.html">Zurück</a>
     </div>
 </div>
 
-<h2>Neues Quiz</h2>
-<label>Titel</label>
-<input id="qtitle" placeholder="z.B. Subnetting">
-<label>Dauer (Minuten)</label>
-<input id="qdur" type="number" min="1" max="180" value="10">
-<div style="margin-top:12px;">
-    <button class="btn primary" id="createQuizBtn">Quiz anlegen</button>
+<div class="card wide">
+    <h2>QuizRuns dieser Klasse</h2>
+    <p class="small">Ein Run ist eine konkrete Durchführung eines Templates (mit Start/PIN/Timer).</p>
+    <div class="msg small" id="msg"></div>
 </div>
-<p class="small" id="msg"></p>
 
 <hr>
 
-<div class="row" id="cards"></div>
+<div class="row" id="runs"></div>
 
 <script type="module">
-    import { api, clearToken, nav, requireTeacherAuth } from "/assets/common.js";
-    requireTeacherAuth();
+    import { api, qs, nav, requireTeacherAuth } from "/assets/common.js";
+    if(!requireTeacherAuth()) {}
 
-    const classId = qs("classId");
-    const msg = document.getElementById("msg");
-    const cards = document.getElementById("cards");
-
-    if (!classId) msg.textContent = "Fehler: classId fehlt in URL.";
+    const classId = Number(qs("classId"));
 
     async function load() {
-      cards.innerHTML = "";
-      const quizzes = await api(`/api/teacher/classes/${classId}/quizzes`);
-      document.getElementById("title").textContent = `Klasse ${classId} – Quizzes`;
+      runs.innerHTML = "";
+      const list = await api(`/api/teacher/classes/${classId}/runs`);
+      title.textContent = `Klasse ${classId}`;
 
-      for (const q of quizzes) {
+      for (const r of list) {
         const el = document.createElement("div");
         el.className = "card";
         el.innerHTML = `
-          <h3>${q.title}</h3>
-          <p class="small">QuizID: ${q.id}</p>
-          <p class="small">Aktiv: ${q.active ? "Ja" : "Nein"}</p>
+          <h3>${r.title}</h3>
+          <p class="small">RunID: ${r.id}</p>
+          <p class="small">Status: <b>${r.status}</b></p>
+          <p class="small">PIN: ${r.joinPin ?? "-"}</p>
           <button class="btn primary">Öffnen</button>
         `;
-        el.querySelector("button").onclick = () => nav(`/teacher/quiz.html?quizId=${q.id}`);
-        cards.appendChild(el);
+        el.querySelector("button").onclick = () => nav(`/teacher/run.html?runId=${r.id}`);
+        runs.appendChild(el);
       }
     }
-
-    document.getElementById("createQuizBtn").onclick = async () => {
-      msg.textContent = "";
-      try {
-        await api(`/api/teacher/classes/${classId}/quizzes`, {
-          method: "POST",
-          body: JSON.stringify({ title: qtitle.value, durationMinutes: Number(qdur.value) })
-        });
-        qtitle.value = "";
-        await load();
-      } catch (e) { msg.textContent = e.message; }
-    };
 
     load().catch(e => msg.textContent = e.message);
 </script>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8" />
+    <title>Template Editor</title>
+    <link rel="stylesheet" href="/assets/app.css">
+</head>
+<body>
+<div class="topbar">
+    <h1 id="head">Template Editor</h1>
+    <div class="row">
+        <a class="badge" href="/teacher/templates.html">Zurück</a>
+    </div>
+</div>
+
+<div class="card wide">
+    <h2>Template</h2>
+    <label>Titel (Thema)</label>
+    <input id="title" placeholder="z.B. Subnetting">
+
+    <hr>
+
+    <h3>Frage hinzufügen</h3>
+    <label>Fragetext</label>
+    <textarea id="qText"></textarea>
+
+    <label>Option A</label><input id="a">
+    <label>Option B</label><input id="b">
+    <label>Option C</label><input id="c">
+    <label>Option D</label><input id="d">
+
+    <label>Korrekt (A/B/C/D)</label>
+    <select id="corr">
+        <option>A</option><option>B</option><option>C</option><option>D</option>
+    </select>
+
+    <div class="row" style="margin-top:12px;">
+        <button class="btn secondary" id="addBtn">Zur Liste</button>
+        <span class="badge" id="count">0</span>
+    </div>
+
+    <div class="msg small" id="msg"></div>
+</div>
+
+<hr>
+
+<div class="card wide">
+    <h2>Fragenliste</h2>
+    <div id="qlist"></div>
+    <div class="row" style="margin-top:12px;">
+        <button class="btn primary" id="saveBtn">Template speichern</button>
+        <button class="btn" id="clearBtn">Liste leeren</button>
+    </div>
+</div>
+
+<hr>
+
+<div class="card wide" id="assignBox" style="display:none;">
+    <h2>Template einer Klasse zuweisen</h2>
+    <div class="row">
+        <select id="classSel"></select>
+        <input id="dur" type="number" min="1" max="180" value="10">
+        <button class="btn primary" id="assignBtn">Zuweisen (Run erstellen)</button>
+    </div>
+    <div class="msg small" id="amsg"></div>
+</div>
+
+<script type="module">
+    import { api, qs, requireTeacherAuth, nav } from "/assets/common.js";
+    if(!requireTeacherAuth()) {}
+
+    const mode = qs("mode") || "create";
+    const templateId = qs("templateId");
+    let pending = [];
+
+    function renderList() {
+      count.textContent = String(pending.length);
+      qlist.innerHTML = pending.map(q => `
+        <div class="card wide" style="margin:10px 0;">
+          <div class="row">
+            <b>#${q.pos}</b>
+            <span class="badge">Correct: ${q.correctOption}</span>
+          </div>
+          <div>${escapeHtml(q.text)}</div>
+          <div class="small">A: ${escapeHtml(q.optionA)}</div>
+          <div class="small">B: ${escapeHtml(q.optionB)}</div>
+          <div class="small">C: ${escapeHtml(q.optionC)}</div>
+          <div class="small">D: ${escapeHtml(q.optionD)}</div>
+        </div>
+      `).join("");
+    }
+
+    function escapeHtml(s){ return (s ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;"); }
+
+    addBtn.onclick = () => {
+      msg.textContent = "";
+      const nextPos = pending.length + 1;
+      const q = {
+        pos: nextPos,
+        text: qText.value.trim(),
+        optionA: a.value.trim(),
+        optionB: b.value.trim(),
+        optionC: c.value.trim(),
+        optionD: d.value.trim(),
+        correctOption: corr.value
+      };
+      if(!q.text || !q.optionA || !q.optionB || !q.optionC || !q.optionD) {
+        msg.textContent = "Bitte Frage + alle Optionen ausfüllen.";
+        return;
+      }
+      pending.push(q);
+      qText.value = a.value = b.value = c.value = d.value = "";
+      corr.value = "A";
+      renderList();
+    };
+
+    clearBtn.onclick = () => { pending = []; renderList(); };
+
+    saveBtn.onclick = async () => {
+      msg.textContent = "";
+      try{
+        const res = await api("/api/teacher/templates", {
+          method:"POST",
+          body: JSON.stringify({ title: title.value, questions: pending })
+        });
+        msg.textContent = `Template gespeichert (ID: ${res.id}).`;
+        nav("/teacher/templates.html");
+      } catch(e){ msg.textContent = e.message; }
+    };
+
+    async function loadClasses() {
+      const classes = await api("/api/teacher/classes");
+      classSel.innerHTML = classes.map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+    }
+
+    async function loadExistingTemplate() {
+      if(!templateId) return;
+      const t = await api(`/api/teacher/templates/${templateId}`);
+      title.value = t.title;
+      pending = (t.questions || []).map(x => ({
+        pos: x.pos,
+        text: x.text,
+        optionA: x.optionA,
+        optionB: x.optionB,
+        optionC: x.optionC,
+        optionD: x.optionD,
+        correctOption: x.correctOption
+      }));
+      renderList();
+    }
+
+    async function setupAssign() {
+      assignBox.style.display = "block";
+      await loadClasses();
+      assignBtn.onclick = async () => {
+        amsg.textContent = "";
+        try{
+          const run = await api("/api/teacher/runs/assign", {
+            method:"POST",
+            body: JSON.stringify({
+              templateId: Number(templateId),
+              classId: Number(classSel.value),
+              durationMinutes: Number(dur.value)
+            })
+          });
+          amsg.textContent = `Run erstellt (ID: ${run.id}). Weiterleitung...`;
+          nav(`/teacher/run.html?runId=${run.id}`);
+        } catch(e){ amsg.textContent = e.message; }
+      };
+    }
+
+    (async () => {
+      if(mode === "view" || mode === "assign") {
+        head.textContent = "Template ansehen";
+        saveBtn.style.display = "none";
+        addBtn.style.display = "none";
+        clearBtn.style.display = "none";
+        await loadExistingTemplate();
+        if(mode === "assign") await setupAssign();
+      }
+    })();
+</script>
+</body>
+</html>

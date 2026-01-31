@@ -1,4 +1,3 @@
-// Summary: Erzeugt und prüft JWT für Lehrkraft-Login.
 package security;
 
 import io.jsonwebtoken.Jwts;
@@ -27,14 +26,14 @@ public class JwtService {
         this.ttlMinutes = ttlMinutes;
     }
 
-    public String issueToken(long teacherId, String email) {
+    public String issueToken(long teacherId, String username) {
         Instant now = Instant.now();
         Instant exp = now.plusSeconds(ttlMinutes * 60);
 
         return Jwts.builder()
                 .issuer(issuer)
                 .subject(Long.toString(teacherId))
-                .claim("email", email)
+                .claim("username", username)
                 .issuedAt(Date.from(now))
                 .expiration(Date.from(exp))
                 .signWith(Keys.hmacShaKeyFor(secret))

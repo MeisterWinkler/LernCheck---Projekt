@@ -1,10 +1,9 @@
-// Summary: Klasse/Kurs gehört zu einer Lehrkraft und gruppiert Quizze.
 package domain;
 
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "classes")
+@Table(name = "school_classes")
 public class SchoolClass {
 
     @Id
@@ -12,6 +11,7 @@ public class SchoolClass {
     private Long id;
 
     @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id")
     private Teacher owner;
 
     @Column(nullable = false, length = 80)
