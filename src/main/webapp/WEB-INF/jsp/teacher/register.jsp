@@ -4,30 +4,25 @@
 <!doctype html>
 <html>
 <head>
-  <title>Lehrer Login</title>
+  <title>Lehrer registrieren</title>
   <link rel="stylesheet" href="${pageContext.request.contextPath}/static/app.css">
 </head>
-
 <body class="container">
 
-<h1>Lehrer Login</h1>
+<h1>Lehrer Registrierung</h1>
 
-<c:if test="${param.registered == '1'}">
-  <p class="ok">Registrierung erfolgreich – bitte einloggen.</p>
-</c:if>
+<form method="post" action="${pageContext.request.contextPath}/teacher/register" class="card">
 
-<form method="post" action="${pageContext.request.contextPath}/teacher/login" class="card">
-
-  <label>Anmeldename</label>
+  <label>Benutzername</label>
   <input name="username" required>
 
   <label>Passwort</label>
   <input name="password" type="password" required>
 
-  <button class="btn" type="submit">Anmelden</button>
+  <button class="btn" type="submit">Registrieren</button>
 
-  <a class="btn secondary" href="${pageContext.request.contextPath}/teacher/register">
-    Registrieren
+  <a class="btn secondary" href="${pageContext.request.contextPath}/teacher/login">
+    Zurück zum Login
   </a>
 
   <c:if test="${not empty error}">

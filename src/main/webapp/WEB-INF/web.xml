@@ -1,26 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
-         version="6.0">
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd"
+         version="6.1">
 
     <display-name>Quiz WebApp</display-name>
 
     <!-- DB Config -->
     <context-param>
+        <param-name>db.driver</param-name>
+        <param-value>org.mariadb.jdbc.Driver</param-value>
+    </context-param>
+    <context-param>
         <param-name>db.url</param-name>
-        <param-value>jdbc:mariadb://localhost:3306/quizapp?useUnicode=true&amp;characterEncoding=utf8</param-value>
+        <param-value>jdbc:mariadb://localhost:3306/quizapp</param-value>
     </context-param>
     <context-param>
         <param-name>db.user</param-name>
-        <param-value>quizuser</param-value>
+        <param-value>root</param-value>
     </context-param>
     <context-param>
         <param-name>db.pass</param-name>
-        <param-value>quizpass</param-value>
+        <param-value></param-value>
     </context-param>
 
-    <!-- Teacher -->
+    <!-- ========= Teacher Servlets ========= -->
+
     <servlet>
         <servlet-name>TeacherLogin</servlet-name>
         <servlet-class>com.example.quiz.servlet.teacher.TeacherLoginServlet</servlet-class>
@@ -28,6 +33,15 @@
     <servlet-mapping>
         <servlet-name>TeacherLogin</servlet-name>
         <url-pattern>/teacher/login</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TeacherRegister</servlet-name>
+        <servlet-class>com.example.quiz.servlet.teacher.TeacherRegisterServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TeacherRegister</servlet-name>
+        <url-pattern>/teacher/register</url-pattern>
     </servlet-mapping>
 
     <servlet>
@@ -111,7 +125,8 @@
         <url-pattern>/teacher/quiz/restart</url-pattern>
     </servlet-mapping>
 
-    <!-- Student -->
+    <!-- ========= Student Servlets ========= -->
+
     <servlet>
         <servlet-name>StudentJoin</servlet-name>
         <servlet-class>com.example.quiz.servlet.student.StudentJoinServlet</servlet-class>
@@ -139,11 +154,12 @@
         <url-pattern>/student/submit</url-pattern>
     </servlet-mapping>
 
-    <!-- Filter: Teacher-Bereich schützen -->
+    <!-- ========= Auth Filter (Teacher-Bereich schützen) ========= -->
     <filter>
         <filter-name>AuthFilter</filter-name>
         <filter-class>com.example.quiz.filter.AuthFilter</filter-class>
     </filter>
+
     <filter-mapping>
         <filter-name>AuthFilter</filter-name>
         <url-pattern>/teacher/*</url-pattern>
@@ -152,4 +168,5 @@
     <welcome-file-list>
         <welcome-file>teacher/login</welcome-file>
     </welcome-file-list>
+
 </web-app>

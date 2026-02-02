@@ -13,12 +13,15 @@ import java.sql.Connection;
 public class TeacherLoginServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
         req.getRequestDispatcher("/WEB-INF/jsp/teacher/login.jsp").forward(req, resp);
     }
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
         String username = req.getParameter("username");
         String password = req.getParameter("password");
 
@@ -36,7 +39,9 @@ public class TeacherLoginServlet extends HttpServlet {
             s.setAttribute("teacherId", t.id);
             s.setAttribute("teacherUsername", t.username);
 
+            // WICHTIG: ContextPath verwenden
             resp.sendRedirect(req.getContextPath() + "/teacher/dashboard");
+
         } catch (Exception e) {
             throw new ServletException(e);
         }

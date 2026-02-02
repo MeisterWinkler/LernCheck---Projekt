@@ -9,8 +9,11 @@ import java.io.IOException;
 import java.sql.Connection;
 
 public class TeacherDashboardServlet extends HttpServlet {
+
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
         try (Connection c = DB.getConnection(getServletContext())) {
             ClassDao classDao = new ClassDao();
             req.setAttribute("classes", classDao.listAll(c));
