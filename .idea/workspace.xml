@@ -4,28 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb6f378a-a5d0-40e4-b675-86b4372411a7" name="Changes" comment="Grundsachen funktionieren alle...yeahhhhh">
+    <list default="true" id="bb6f378a-a5d0-40e4-b675-86b4372411a7" name="Changes" comment="funktioniert besser als davor xD">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/dao/ClassDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/dao/ClassDao.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/dao/QuizDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/dao/QuizDao.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/filter/AuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/filter/AuthFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/student/StudentJoinServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/student/StudentJoinServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/student/StudentSubmitServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/student/StudentSubmitServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/student/StudentTakeQuizServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/student/StudentTakeQuizServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherQuizFeedbackServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherQuizFeedbackServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherStartQuizServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherStartQuizServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/error.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/error.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/student/join.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/student/join.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/student/take_quiz.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/student/take_quiz.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/feedback.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/feedback.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherClassQuizzesServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherClassQuizzesServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherDashboardServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherDashboardServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherQuizResultsServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherQuizResultsServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/results.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/results.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/start_quiz.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/start_quiz.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/dao/ClassDao.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/dao/ClassDao.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/dao/QuizDao.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/dao/QuizDao.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/filter/AuthFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/filter/AuthFilter.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/student/StudentJoinServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/student/StudentJoinServlet.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/student/StudentSubmitServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/student/StudentSubmitServlet.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/student/StudentTakeQuizServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/student/StudentTakeQuizServlet.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherQuizFeedbackServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherQuizFeedbackServlet.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherStartQuizServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherStartQuizServlet.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherClassQuizzesServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherClassQuizzesServlet.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherDashboardServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherDashboardServlet.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherQuizResultsServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherQuizResultsServlet.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -160,14 +153,23 @@
       <option name="project" value="LOCAL" />
       <updated>1770032534675</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="funktioniert besser als davor xD">
+      <option name="closed" value="true" />
+      <created>1770039320509</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1770039320509</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="db connections needs to be fixed" />
     <MESSAGE value="funktioniert mehr als davor" />
     <MESSAGE value="Grundsachen funktionieren alle...yeahhhhh" />
-    <option name="LAST_COMMIT_MESSAGE" value="Grundsachen funktionieren alle...yeahhhhh" />
+    <MESSAGE value="funktioniert besser als davor xD" />
+    <option name="LAST_COMMIT_MESSAGE" value="funktioniert besser als davor xD" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -8,6 +8,18 @@ import java.util.*;
 
 public class QuizDao {
 
+    // ✅ NEU: beendet alle abgelaufenen RUNNING Quizze zentral
+    public void endAllExpired(Connection c) throws Exception {
+        String sql = """
+          UPDATE class_quizzes
+          SET status='ENDED', ended_at=NOW()
+          WHERE status='RUNNING' AND ends_at IS NOT NULL AND ends_at <= NOW()
+        """;
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.executeUpdate();
+        }
+    }
+
     // -------- Templates --------
     public long createTemplate(Connection c, long teacherId, String title) throws Exception {
         String sql = "INSERT INTO quiz_templates(teacher_id, title) VALUES (?,?)";
@@ -127,8 +139,10 @@ public class QuizDao {
         }
     }
 
-    // ✅ FEHLTE #1: listQuizzesForTeacherAndClass
     public List<Map<String, Object>> listQuizzesForTeacherAndClass(Connection c, long teacherId, long classId) throws Exception {
+        // ✅ wichtig: vor der Anzeige abgelaufene schließen
+        endAllExpired(c);
+
         String sql = """
           SELECT cq.id as quiz_id, qt.title, cq.status, cq.created_at, cq.started_at, cq.ended_at
           FROM class_quizzes cq
@@ -190,6 +204,9 @@ public class QuizDao {
     }
 
     public Quiz loadClassQuiz(Connection c, long quizId, long teacherId) throws Exception {
+        // ✅ immer vorher global schließen
+        endAllExpired(c);
+
         String sql = """
           SELECT cq.id, cq.template_id, cq.status, cq.invite_code, cq.duration_seconds,
                  cq.started_at, cq.ends_at, cq.ended_at, qt.title
@@ -233,14 +250,11 @@ public class QuizDao {
         return quiz;
     }
 
-    /**
-     * Student-Load by invite code:
-     * - if expired: mark quiz ENDED and return null
-     * - only return if RUNNING and not expired
-     */
     public Quiz loadClassQuizForStudentByCode(Connection c, String inviteCode) throws Exception {
+        // ✅ global schließen (sicher)
+        endAllExpired(c);
 
-        // abgelaufene RUNNING direkt auf ENDED setzen
+        // zusätzlich: inviteCode-spezifische Sicherheit
         String endSql = """
           UPDATE class_quizzes
           SET status='ENDED', ended_at=NOW()
@@ -313,31 +327,8 @@ public class QuizDao {
         }
     }
 
-    public String getStatus(Connection c, long quizId) throws Exception {
-        try (PreparedStatement ps = c.prepareStatement("SELECT status FROM class_quizzes WHERE id=?")) {
-            ps.setLong(1, quizId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) return null;
-                return rs.getString("status");
-            }
-        }
-    }
-
-    public LocalDateTime getEndsAt(Connection c, long quizId) throws Exception {
-        try (PreparedStatement ps = c.prepareStatement("SELECT ends_at FROM class_quizzes WHERE id=?")) {
-            ps.setLong(1, quizId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) return null;
-                Timestamp t = rs.getTimestamp("ends_at");
-                return t == null ? null : t.toLocalDateTime();
-            }
-        }
-    }
-
-    // ✅ FEHLTE #3: getEndedAt
     public LocalDateTime getEndedAt(Connection c, long quizId, long teacherId) throws Exception {
-        // optional: erst mal auto-beenden, wenn abgelaufen
-        endQuizIfExpired(c, quizId);
+        endAllExpired(c);
 
         try (PreparedStatement ps = c.prepareStatement(
                 "SELECT ended_at FROM class_quizzes WHERE id=? AND teacher_id=?")) {
@@ -352,7 +343,7 @@ public class QuizDao {
     }
 
     public List<QuizResultRow> computeResults(Connection c, long quizId, long teacherId) throws Exception {
-        endQuizIfExpired(c, quizId);
+        endAllExpired(c);
 
         try (PreparedStatement guard = c.prepareStatement("SELECT 1 FROM class_quizzes WHERE id=? AND teacher_id=?")) {
             guard.setLong(1, quizId);
@@ -397,7 +388,7 @@ public class QuizDao {
     }
 
     public List<String> listFeedback(Connection c, long quizId, long teacherId) throws Exception {
-        endQuizIfExpired(c, quizId);
+        endAllExpired(c);
 
         try (PreparedStatement guard = c.prepareStatement("SELECT 1 FROM class_quizzes WHERE id=? AND teacher_id=?")) {
             guard.setLong(1, quizId);
@@ -423,9 +414,7 @@ public class QuizDao {
         return out;
     }
 
-    // ✅ FEHLTE #2: restartQuiz (löscht Attempts + setzt Quiz zurück)
     public void restartQuiz(Connection c, long quizId, long teacherId) throws Exception {
-        // Nur erlauben, wenn Quiz dem Lehrer gehört
         try (PreparedStatement guard = c.prepareStatement("SELECT 1 FROM class_quizzes WHERE id=? AND teacher_id=?")) {
             guard.setLong(1, quizId);
             guard.setLong(2, teacherId);
@@ -434,20 +423,17 @@ public class QuizDao {
             }
         }
 
-        // Antworten löschen
         try (PreparedStatement ps1 = c.prepareStatement(
                 "DELETE aa FROM attempt_answers aa JOIN quiz_attempts qa ON qa.id=aa.attempt_id WHERE qa.quiz_id=?")) {
             ps1.setLong(1, quizId);
             ps1.executeUpdate();
         }
 
-        // Attempts löschen
         try (PreparedStatement ps2 = c.prepareStatement("DELETE FROM quiz_attempts WHERE quiz_id=?")) {
             ps2.setLong(1, quizId);
             ps2.executeUpdate();
         }
 
-        // Quiz zurücksetzen
         try (PreparedStatement ps3 = c.prepareStatement("""
             UPDATE class_quizzes
             SET status='NOT_STARTED',

@@ -16,6 +16,7 @@
   <h1>Auswertung</h1>
   <div class="topbar-right">
     <a class="btn secondary" href="${pageContext.request.contextPath}/teacher/dashboard">Dashboard</a>
+    <a class="btn secondary" href="${pageContext.request.contextPath}/teacher/quiz/start?id=${quizId}">Zum Quiz</a>
   </div>
 </div>
 
@@ -73,6 +74,21 @@
     </div>
   </div>
 </c:forEach>
+
+<!-- ✅ Feedback direkt in der Auswertung -->
+<div class="card" style="margin-top: 18px;">
+  <h2>Feedback</h2>
+
+  <c:if test="${empty feedback}">
+    <p class="muted">Kein Feedback abgegeben.</p>
+  </c:if>
+
+  <c:forEach items="${feedback}" var="f">
+    <div style="padding:10px;border:1px solid #e5e7eb;border-radius:10px;margin:10px 0;">
+      ${f}
+    </div>
+  </c:forEach>
+</div>
 
 </body>
 </html>
