@@ -154,6 +154,15 @@
         <url-pattern>/student/submit</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>TeacherCreateClass</servlet-name>
+        <servlet-class>com.example.quiz.servlet.teacher.TeacherCreateClassServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>TeacherCreateClass</servlet-name>
+        <url-pattern>/teacher/class/create</url-pattern>
+    </servlet-mapping>
     <!-- ========= Auth Filter (Teacher-Bereich schützen) ========= -->
     <filter>
         <filter-name>AuthFilter</filter-name>

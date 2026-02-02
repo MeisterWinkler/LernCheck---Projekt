@@ -34,8 +34,8 @@ public class StudentSubmitServlet extends HttpServlet {
             }
 
             // Quiz ggf. beenden, falls Zeit abgelaufen
-            qdao.endQuizIfExpired(c, quiz.quizId);
-            if (!"RUNNING".equals(qdao.getStatus(c, quiz.quizId))) {
+            qdao.endQuizIfExpired(c, quiz.getQuizId());
+            if (!"RUNNING".equals(qdao.getStatus(c, quiz.getQuizId()))) {
                 req.setAttribute("message", "Zeit ist abgelaufen. Abgabe nicht mehr möglich.");
                 req.getRequestDispatcher("/WEB-INF/jsp/error.jsp").forward(req, resp);
                 return;
@@ -46,13 +46,13 @@ public class StudentSubmitServlet extends HttpServlet {
             StudentDao sdao = new StudentDao();
             long studentId = sdao.create(c, studentName);
 
-            long attemptId = qdao.createAttempt(c, quiz.quizId, studentId, feedback);
+            long attemptId = qdao.createAttempt(c, quiz.getQuizId(), studentId, feedback);
 
-            for (QuizQuestion q : quiz.questions) {
-                String chosen = req.getParameter("q_" + q.id);
+            for (QuizQuestion q : quiz.getQuestions()) {
+                String chosen = req.getParameter("q_" + q.getId());
                 if (chosen == null || chosen.isEmpty()) continue; // unbeantwortet erlaubt
                 char ch = chosen.charAt(0);
-                qdao.insertAnswer(c, attemptId, q.id, ch);
+                qdao.insertAnswer(c, attemptId, q.getId(), ch);
             }
 
             c.commit();

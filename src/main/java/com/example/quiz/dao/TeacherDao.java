@@ -14,9 +14,9 @@ public class TeacherDao {
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) return null;
                 Teacher t = new Teacher();
-                t.id = rs.getLong("id");
-                t.username = rs.getString("username");
-                t.passwordHash = rs.getString("password_hash");
+                t.setId(rs.getLong("id"));
+                t.setUsername(rs.getString("username"));
+                t.setPasswordHash(rs.getString("password_hash"));
                 return t;
             }
         }

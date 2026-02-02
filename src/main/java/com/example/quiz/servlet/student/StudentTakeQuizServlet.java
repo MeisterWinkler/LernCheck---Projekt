@@ -30,7 +30,7 @@ public class StudentTakeQuizServlet extends HttpServlet {
             }
 
             // serverseitig ablaufen lassen
-            LocalDateTime endsAt = qdao.getEndsAt(c, quiz.quizId);
+            LocalDateTime endsAt = qdao.getEndsAt(c, quiz.getQuizId());
             req.setAttribute("quiz", quiz);
             req.setAttribute("endsAt", endsAt); // für JS Countdown
             req.getRequestDispatcher("/WEB-INF/jsp/student/take_quiz.jsp").forward(req, resp);

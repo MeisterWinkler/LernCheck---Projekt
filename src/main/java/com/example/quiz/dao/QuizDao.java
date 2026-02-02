@@ -53,10 +53,10 @@ public class QuizDao {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     TemplateSummary t = new TemplateSummary();
-                    t.id = rs.getLong("id");
-                    t.title = rs.getString("title");
+                    t.setId(rs.getLong("id"));
+                    t.setTitle(rs.getString("title"));
                     Timestamp ts = rs.getTimestamp("created_at");
-                    t.createdAt = ts != null ? ts.toLocalDateTime() : null;
+                    t.setCreatedAt(ts != null ? ts.toLocalDateTime() : null);
                     out.add(t);
                 }
             }
@@ -66,13 +66,13 @@ public class QuizDao {
 
     public Quiz loadTemplate(Connection c, long templateId) throws Exception {
         Quiz quiz = new Quiz();
-        quiz.templateId = templateId;
+        quiz.setTemplateId(templateId);
 
         try (PreparedStatement ps = c.prepareStatement("SELECT title FROM quiz_templates WHERE id=?")) {
             ps.setLong(1, templateId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) return null;
-                quiz.title = rs.getString("title");
+                quiz.setTitle(rs.getString("title"));
             }
         }
 
@@ -83,31 +83,35 @@ public class QuizDao {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     QuizQuestion q = new QuizQuestion();
-                    q.id = rs.getLong("id");
-                    q.text = rs.getString("question_text");
-                    q.correct = rs.getString("correct_option").charAt(0);
-                    q.pos = rs.getInt("pos");
-                    qMap.put(q.id, q);
+                    q.setId(rs.getLong("id"));
+                    q.setText(rs.getString("question_text"));
+                    q.setCorrect(rs.getString("correct_option").charAt(0));
+                    q.setPos(rs.getInt("pos"));
+                    qMap.put(q.getId(), q);
                 }
             }
         }
 
-        String oSql = "SELECT question_id, option_letter, option_text FROM template_options WHERE question_id IN (" +
-                (qMap.isEmpty() ? "NULL" : qMap.keySet().toString().replace("[", "").replace("]", "")) + ")";
-
         if (!qMap.isEmpty()) {
+            StringBuilder in = new StringBuilder();
+            for (Long id : qMap.keySet()) {
+                if (!in.isEmpty()) in.append(",");
+                in.append(id);
+            }
+
+            String oSql = "SELECT question_id, option_letter, option_text FROM template_options WHERE question_id IN (" + in + ")";
             try (PreparedStatement ps = c.prepareStatement(oSql);
                  ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     long qid = rs.getLong("question_id");
                     char letter = rs.getString("option_letter").charAt(0);
                     String text = rs.getString("option_text");
-                    qMap.get(qid).options.put(letter, text);
+                    qMap.get(qid).getOptions().put(letter, text);
                 }
             }
         }
 
-        quiz.questions.addAll(qMap.values());
+        quiz.getQuestions().addAll(qMap.values());
         return quiz;
     }
 
@@ -160,33 +164,39 @@ public class QuizDao {
           JOIN quiz_templates qt ON qt.id=cq.template_id
           WHERE cq.id=? AND cq.teacher_id=?
         """;
+
         Quiz quiz = null;
         try (PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setLong(1, quizId);
             ps.setLong(2, teacherId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) return null;
+
                 quiz = new Quiz();
-                quiz.quizId = rs.getLong("id");
-                quiz.templateId = rs.getLong("template_id");
-                quiz.status = rs.getString("status");
-                quiz.inviteCode = rs.getString("invite_code");
+                quiz.setQuizId(rs.getLong("id"));
+                quiz.setTemplateId(rs.getLong("template_id"));
+                quiz.setStatus(rs.getString("status"));
+                quiz.setInviteCode(rs.getString("invite_code"));
+
                 int dur = rs.getInt("duration_seconds");
-                quiz.durationSeconds = rs.wasNull() ? null : dur;
+                quiz.setDurationSeconds(rs.wasNull() ? null : dur);
+
                 Timestamp st = rs.getTimestamp("started_at");
                 Timestamp en = rs.getTimestamp("ends_at");
                 Timestamp ed = rs.getTimestamp("ended_at");
-                quiz.startedAt = st != null ? st.toLocalDateTime() : null;
-                quiz.endsAt = en != null ? en.toLocalDateTime() : null;
-                quiz.endedAt = ed != null ? ed.toLocalDateTime() : null;
-                quiz.title = rs.getString("title");
+
+                quiz.setStartedAt(st != null ? st.toLocalDateTime() : null);
+                quiz.setEndsAt(en != null ? en.toLocalDateTime() : null);
+                quiz.setEndedAt(ed != null ? ed.toLocalDateTime() : null);
+
+                quiz.setTitle(rs.getString("title"));
             }
         }
+
         if (quiz == null) return null;
 
-        // attach template questions/options
-        Quiz tpl = loadTemplate(c, quiz.templateId);
-        quiz.questions = tpl.questions;
+        Quiz tpl = loadTemplate(c, quiz.getTemplateId());
+        quiz.setQuestions(tpl != null ? tpl.getQuestions() : List.of());
         return quiz;
     }
 
@@ -202,23 +212,27 @@ public class QuizDao {
             ps.setString(1, inviteCode);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) return null;
+
                 String status = rs.getString("status");
                 if (!"RUNNING".equals(status)) return null;
 
                 Quiz quiz = new Quiz();
-                quiz.quizId = rs.getLong("id");
-                quiz.templateId = rs.getLong("template_id");
-                quiz.status = status;
-                quiz.inviteCode = rs.getString("invite_code");
-                quiz.durationSeconds = rs.getInt("duration_seconds");
+                quiz.setQuizId(rs.getLong("id"));
+                quiz.setTemplateId(rs.getLong("template_id"));
+                quiz.setStatus(status);
+                quiz.setInviteCode(rs.getString("invite_code"));
+
+                quiz.setDurationSeconds(rs.getInt("duration_seconds"));
+
                 Timestamp st = rs.getTimestamp("started_at");
                 Timestamp en = rs.getTimestamp("ends_at");
-                quiz.startedAt = st != null ? st.toLocalDateTime() : null;
-                quiz.endsAt = en != null ? en.toLocalDateTime() : null;
-                quiz.title = rs.getString("title");
 
-                Quiz tpl = loadTemplate(c, quiz.templateId);
-                quiz.questions = tpl.questions;
+                quiz.setStartedAt(st != null ? st.toLocalDateTime() : null);
+                quiz.setEndsAt(en != null ? en.toLocalDateTime() : null);
+                quiz.setTitle(rs.getString("title"));
+
+                Quiz tpl = loadTemplate(c, quiz.getTemplateId());
+                quiz.setQuestions(tpl != null ? tpl.getQuestions() : List.of());
                 return quiz;
             }
         }
@@ -246,7 +260,6 @@ public class QuizDao {
     }
 
     public void endQuizIfExpired(Connection c, long quizId) throws Exception {
-        // idempotent: wenn ends_at in Vergangenheit und status RUNNING -> ENDED
         String sql = """
           UPDATE class_quizzes
           SET status='ENDED', ended_at=NOW()
@@ -259,7 +272,6 @@ public class QuizDao {
     }
 
     public void restartQuiz(Connection c, long quizId, long teacherId) throws Exception {
-        // löscht alle Attempts & setzt Status zurück
         try (PreparedStatement ps1 = c.prepareStatement("DELETE aa FROM attempt_answers aa JOIN quiz_attempts qa ON qa.id=aa.attempt_id WHERE qa.quiz_id=?")) {
             ps1.setLong(1, quizId);
             ps1.executeUpdate();
@@ -284,8 +296,6 @@ public class QuizDao {
         }
     }
 
-    // -------- Submit attempt --------
-
     public long createAttempt(Connection c, long quizId, long studentId, String feedback) throws Exception {
         String sql = "INSERT INTO quiz_attempts(quiz_id, student_id, submitted_at, feedback) VALUES (?,?,NOW(),?)";
         try (PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -307,13 +317,9 @@ public class QuizDao {
         }
     }
 
-    // -------- Results / Feedback --------
-
     public List<QuizResultRow> computeResults(Connection c, long quizId, long teacherId) throws Exception {
-        // Status ggf. auto beenden
         endQuizIfExpired(c, quizId);
 
-        // Nur Lehrer darf sehen
         try (PreparedStatement guard = c.prepareStatement("SELECT 1 FROM class_quizzes WHERE id=? AND teacher_id=?")) {
             guard.setLong(1, quizId);
             guard.setLong(2, teacherId);
@@ -341,12 +347,14 @@ public class QuizDao {
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {
                     QuizResultRow r = new QuizResultRow();
-                    r.questionId = rs.getLong("question_id");
-                    r.pos = rs.getInt("pos");
-                    r.questionText = rs.getString("question_text");
+                    r.setQuestionId(rs.getLong("question_id"));
+                    r.setPos(rs.getInt("pos"));
+                    r.setQuestionText(rs.getString("question_text"));
+
                     int correct = rs.getInt("correct_cnt");
                     int total = rs.getInt("total_cnt");
-                    r.percentCorrect = total == 0 ? 0.0 : (100.0 * correct / total);
+                    r.setPercentCorrect(total == 0 ? 0.0 : (100.0 * correct / total));
+
                     rows.add(r);
                 }
             }

@@ -29,17 +29,16 @@ public class TeacherLoginServlet extends HttpServlet {
             TeacherDao dao = new TeacherDao();
             Teacher t = dao.findByUsername(c, username);
 
-            if (t == null || !Passwords.verify(password, t.passwordHash)) {
+            if (t == null || !Passwords.verify(password, t.getPasswordHash())) {
                 req.setAttribute("error", "Falscher Benutzername oder Passwort.");
                 req.getRequestDispatcher("/WEB-INF/jsp/teacher/login.jsp").forward(req, resp);
                 return;
             }
 
             HttpSession s = req.getSession(true);
-            s.setAttribute("teacherId", t.id);
-            s.setAttribute("teacherUsername", t.username);
+            s.setAttribute("teacherId", t.getId());
+            s.setAttribute("teacherUsername", t.getUsername());
 
-            // WICHTIG: ContextPath verwenden
             resp.sendRedirect(req.getContextPath() + "/teacher/dashboard");
 
         } catch (Exception e) {
