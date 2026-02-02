@@ -1,64 +1,71 @@
 package com.example.quiz.servlet.student;
 
 import com.example.quiz.dao.QuizDao;
-import com.example.quiz.dao.StudentDao;
 import com.example.quiz.model.Quiz;
-import com.example.quiz.model.QuizQuestion;
 import com.example.quiz.util.DB;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.time.LocalDateTime;
 
 public class StudentSubmitServlet extends HttpServlet {
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String code = (String) req.getSession().getAttribute("inviteCode");
-        String studentName = (String) req.getSession().getAttribute("studentName");
-        if (code == null || studentName == null) {
-            resp.sendRedirect(req.getContextPath() + "/student/join");
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        HttpSession s = req.getSession(false);
+        if (s == null || s.getAttribute("studentId") == null || s.getAttribute("inviteCode") == null) {
+            req.setAttribute("message", "Bitte zuerst über den Einladungscode beitreten.");
+            req.setAttribute("showStudentOnly", true);
+            req.getRequestDispatcher("/WEB-INF/jsp/error.jsp").forward(req, resp);
             return;
         }
 
-        String feedback = req.getParameter("feedback");
+        long studentId = (long) s.getAttribute("studentId");
+        String code = (String) s.getAttribute("inviteCode");
+
+        String feedback = req.getParameter("feedback"); // optional
+        if (feedback != null && feedback.isBlank()) feedback = null;
 
         try (Connection c = DB.getConnection(getServletContext())) {
-            QuizDao qdao = new QuizDao();
-            Quiz quiz = qdao.loadClassQuizForStudentByCode(c, code);
+            QuizDao quizDao = new QuizDao();
+
+            // Quiz laden (dabei wird ggf. ENDED gesetzt, wenn abgelaufen)
+            Quiz quiz = quizDao.loadClassQuizForStudentByCode(c, code);
+
             if (quiz == null) {
-                req.setAttribute("message", "Quiz ist nicht verfügbar (evtl. beendet).");
-                req.getRequestDispatcher("/WEB-INF/jsp/error.jsp").forward(req, resp);
-                return;
-            }
-
-            // Quiz ggf. beenden, falls Zeit abgelaufen
-            qdao.endQuizIfExpired(c, quiz.getQuizId());
-            if (!"RUNNING".equals(qdao.getStatus(c, quiz.getQuizId()))) {
                 req.setAttribute("message", "Zeit ist abgelaufen. Abgabe nicht mehr möglich.");
+                req.setAttribute("showStudentOnly", true);
                 req.getRequestDispatcher("/WEB-INF/jsp/error.jsp").forward(req, resp);
                 return;
             }
 
-            c.setAutoCommit(false);
-
-            StudentDao sdao = new StudentDao();
-            long studentId = sdao.create(c, studentName);
-
-            long attemptId = qdao.createAttempt(c, quiz.getQuizId(), studentId, feedback);
-
-            for (QuizQuestion q : quiz.getQuestions()) {
-                String chosen = req.getParameter("q_" + q.getId());
-                if (chosen == null || chosen.isEmpty()) continue; // unbeantwortet erlaubt
-                char ch = chosen.charAt(0);
-                qdao.insertAnswer(c, attemptId, q.getId(), ch);
+            // zusätzliche Sicherheit: endsAt prüfen
+            if (quiz.getEndsAt() != null && quiz.getEndsAt().isBefore(LocalDateTime.now())) {
+                req.setAttribute("message", "Zeit ist abgelaufen. Abgabe nicht mehr möglich.");
+                req.setAttribute("showStudentOnly", true);
+                req.getRequestDispatcher("/WEB-INF/jsp/error.jsp").forward(req, resp);
+                return;
             }
 
-            c.commit();
+            long attemptId = quizDao.createAttempt(c, quiz.getQuizId(), studentId, feedback);
 
-            req.getSession().invalidate();
+            for (var q : quiz.getQuestions()) {
+                String p = req.getParameter("answer_" + q.getId());
+                if (p != null && !p.isBlank()) {
+                    char chosen = p.charAt(0);
+                    quizDao.insertAnswer(c, attemptId, q.getId(), chosen);
+                }
+            }
+
+            // Session sauber machen
+            s.invalidate();
+
             resp.sendRedirect(req.getContextPath() + "/student/join?done=1");
+
         } catch (Exception e) {
             throw new ServletException(e);
         }

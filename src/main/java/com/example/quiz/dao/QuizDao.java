@@ -116,7 +116,6 @@ public class QuizDao {
     }
 
     // -------- Class quiz instance --------
-
     public long createClassQuizFromTemplate(Connection c, long teacherId, long classId, long templateId) throws Exception {
         String sql = "INSERT INTO class_quizzes(teacher_id, class_id, template_id) VALUES (?,?,?)";
         try (PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -128,7 +127,8 @@ public class QuizDao {
         }
     }
 
-    public List<Map<String,Object>> listQuizzesForTeacherAndClass(Connection c, long teacherId, long classId) throws Exception {
+    // ✅ FEHLTE #1: listQuizzesForTeacherAndClass
+    public List<Map<String, Object>> listQuizzesForTeacherAndClass(Connection c, long teacherId, long classId) throws Exception {
         String sql = """
           SELECT cq.id as quiz_id, qt.title, cq.status, cq.created_at, cq.started_at, cq.ended_at
           FROM class_quizzes cq
@@ -156,10 +156,43 @@ public class QuizDao {
         return out;
     }
 
+    public void startQuiz(Connection c, long quizId, long teacherId, int durationSeconds, String inviteCode) throws Exception {
+        String sql = """
+          UPDATE class_quizzes
+          SET status='RUNNING',
+              invite_code=?,
+              duration_seconds=?,
+              started_at=NOW(),
+              ends_at=DATE_ADD(NOW(), INTERVAL ? SECOND),
+              ended_at=NULL
+          WHERE id=? AND teacher_id=?
+        """;
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setString(1, inviteCode);
+            ps.setInt(2, durationSeconds);
+            ps.setInt(3, durationSeconds);
+            ps.setLong(4, quizId);
+            ps.setLong(5, teacherId);
+            ps.executeUpdate();
+        }
+    }
+
+    public void endQuizIfExpired(Connection c, long quizId) throws Exception {
+        String sql = """
+          UPDATE class_quizzes
+          SET status='ENDED', ended_at=NOW()
+          WHERE id=? AND status='RUNNING' AND ends_at IS NOT NULL AND ends_at <= NOW()
+        """;
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setLong(1, quizId);
+            ps.executeUpdate();
+        }
+    }
+
     public Quiz loadClassQuiz(Connection c, long quizId, long teacherId) throws Exception {
         String sql = """
-          SELECT cq.id, cq.template_id, cq.status, cq.invite_code, cq.duration_seconds, cq.started_at, cq.ends_at, cq.ended_at,
-                 qt.title
+          SELECT cq.id, cq.template_id, cq.status, cq.invite_code, cq.duration_seconds,
+                 cq.started_at, cq.ends_at, cq.ended_at, qt.title
           FROM class_quizzes cq
           JOIN quiz_templates qt ON qt.id=cq.template_id
           WHERE cq.id=? AND cq.teacher_id=?
@@ -200,14 +233,32 @@ public class QuizDao {
         return quiz;
     }
 
+    /**
+     * Student-Load by invite code:
+     * - if expired: mark quiz ENDED and return null
+     * - only return if RUNNING and not expired
+     */
     public Quiz loadClassQuizForStudentByCode(Connection c, String inviteCode) throws Exception {
+
+        // abgelaufene RUNNING direkt auf ENDED setzen
+        String endSql = """
+          UPDATE class_quizzes
+          SET status='ENDED', ended_at=NOW()
+          WHERE invite_code=? AND status='RUNNING' AND ends_at IS NOT NULL AND ends_at <= NOW()
+        """;
+        try (PreparedStatement ps = c.prepareStatement(endSql)) {
+            ps.setString(1, inviteCode);
+            ps.executeUpdate();
+        }
+
         String sql = """
-          SELECT cq.id, cq.template_id, cq.status, cq.invite_code, cq.duration_seconds, cq.started_at, cq.ends_at,
-                 qt.title
+          SELECT cq.id, cq.template_id, cq.status, cq.invite_code, cq.duration_seconds,
+                 cq.started_at, cq.ends_at, qt.title
           FROM class_quizzes cq
           JOIN quiz_templates qt ON qt.id=cq.template_id
           WHERE cq.invite_code=?
         """;
+
         try (PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setString(1, inviteCode);
             try (ResultSet rs = ps.executeQuery()) {
@@ -216,83 +267,28 @@ public class QuizDao {
                 String status = rs.getString("status");
                 if (!"RUNNING".equals(status)) return null;
 
+                Timestamp endsAt = rs.getTimestamp("ends_at");
+                if (endsAt != null && endsAt.toLocalDateTime().isBefore(LocalDateTime.now())) {
+                    return null;
+                }
+
                 Quiz quiz = new Quiz();
                 quiz.setQuizId(rs.getLong("id"));
                 quiz.setTemplateId(rs.getLong("template_id"));
                 quiz.setStatus(status);
                 quiz.setInviteCode(rs.getString("invite_code"));
-
                 quiz.setDurationSeconds(rs.getInt("duration_seconds"));
 
                 Timestamp st = rs.getTimestamp("started_at");
-                Timestamp en = rs.getTimestamp("ends_at");
-
                 quiz.setStartedAt(st != null ? st.toLocalDateTime() : null);
-                quiz.setEndsAt(en != null ? en.toLocalDateTime() : null);
+                quiz.setEndsAt(endsAt != null ? endsAt.toLocalDateTime() : null);
+
                 quiz.setTitle(rs.getString("title"));
 
                 Quiz tpl = loadTemplate(c, quiz.getTemplateId());
                 quiz.setQuestions(tpl != null ? tpl.getQuestions() : List.of());
                 return quiz;
             }
-        }
-    }
-
-    public void startQuiz(Connection c, long quizId, long teacherId, int durationSeconds, String inviteCode) throws Exception {
-        String sql = """
-          UPDATE class_quizzes
-          SET status='RUNNING',
-              invite_code=?,
-              duration_seconds=?,
-              started_at=NOW(),
-              ends_at=DATE_ADD(NOW(), INTERVAL ? SECOND),
-              ended_at=NULL
-          WHERE id=? AND teacher_id=?
-        """;
-        try (PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setString(1, inviteCode);
-            ps.setInt(2, durationSeconds);
-            ps.setInt(3, durationSeconds);
-            ps.setLong(4, quizId);
-            ps.setLong(5, teacherId);
-            ps.executeUpdate();
-        }
-    }
-
-    public void endQuizIfExpired(Connection c, long quizId) throws Exception {
-        String sql = """
-          UPDATE class_quizzes
-          SET status='ENDED', ended_at=NOW()
-          WHERE id=? AND status='RUNNING' AND ends_at IS NOT NULL AND ends_at <= NOW()
-        """;
-        try (PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setLong(1, quizId);
-            ps.executeUpdate();
-        }
-    }
-
-    public void restartQuiz(Connection c, long quizId, long teacherId) throws Exception {
-        try (PreparedStatement ps1 = c.prepareStatement("DELETE aa FROM attempt_answers aa JOIN quiz_attempts qa ON qa.id=aa.attempt_id WHERE qa.quiz_id=?")) {
-            ps1.setLong(1, quizId);
-            ps1.executeUpdate();
-        }
-        try (PreparedStatement ps2 = c.prepareStatement("DELETE FROM quiz_attempts WHERE quiz_id=?")) {
-            ps2.setLong(1, quizId);
-            ps2.executeUpdate();
-        }
-        try (PreparedStatement ps3 = c.prepareStatement("""
-            UPDATE class_quizzes
-            SET status='NOT_STARTED',
-                invite_code=NULL,
-                duration_seconds=NULL,
-                started_at=NULL,
-                ends_at=NULL,
-                ended_at=NULL
-            WHERE id=? AND teacher_id=?
-        """)) {
-            ps3.setLong(1, quizId);
-            ps3.setLong(2, teacherId);
-            ps3.executeUpdate();
         }
     }
 
@@ -314,6 +310,44 @@ public class QuizDao {
             ps.setLong(2, questionId);
             ps.setString(3, String.valueOf(chosen));
             ps.executeUpdate();
+        }
+    }
+
+    public String getStatus(Connection c, long quizId) throws Exception {
+        try (PreparedStatement ps = c.prepareStatement("SELECT status FROM class_quizzes WHERE id=?")) {
+            ps.setLong(1, quizId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return null;
+                return rs.getString("status");
+            }
+        }
+    }
+
+    public LocalDateTime getEndsAt(Connection c, long quizId) throws Exception {
+        try (PreparedStatement ps = c.prepareStatement("SELECT ends_at FROM class_quizzes WHERE id=?")) {
+            ps.setLong(1, quizId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return null;
+                Timestamp t = rs.getTimestamp("ends_at");
+                return t == null ? null : t.toLocalDateTime();
+            }
+        }
+    }
+
+    // ✅ FEHLTE #3: getEndedAt
+    public LocalDateTime getEndedAt(Connection c, long quizId, long teacherId) throws Exception {
+        // optional: erst mal auto-beenden, wenn abgelaufen
+        endQuizIfExpired(c, quizId);
+
+        try (PreparedStatement ps = c.prepareStatement(
+                "SELECT ended_at FROM class_quizzes WHERE id=? AND teacher_id=?")) {
+            ps.setLong(1, quizId);
+            ps.setLong(2, teacherId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (!rs.next()) return null;
+                Timestamp t = rs.getTimestamp("ended_at");
+                return t == null ? null : t.toLocalDateTime();
+            }
         }
     }
 
@@ -373,7 +407,12 @@ public class QuizDao {
             }
         }
 
-        String sql = "SELECT feedback FROM quiz_attempts WHERE quiz_id=? AND feedback IS NOT NULL AND TRIM(feedback)<>'' ORDER BY submitted_at DESC";
+        String sql = """
+          SELECT feedback
+          FROM quiz_attempts
+          WHERE quiz_id=? AND feedback IS NOT NULL AND TRIM(feedback)<>'' 
+          ORDER BY submitted_at DESC
+        """;
         List<String> out = new ArrayList<>();
         try (PreparedStatement ps = c.prepareStatement(sql)) {
             ps.setLong(1, quizId);
@@ -384,36 +423,44 @@ public class QuizDao {
         return out;
     }
 
-    public LocalDateTime getEndedAt(Connection c, long quizId, long teacherId) throws Exception {
-        try (PreparedStatement ps = c.prepareStatement("SELECT ended_at FROM class_quizzes WHERE id=? AND teacher_id=?")) {
-            ps.setLong(1, quizId);
-            ps.setLong(2, teacherId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) return null;
-                Timestamp t = rs.getTimestamp("ended_at");
-                return t == null ? null : t.toLocalDateTime();
+    // ✅ FEHLTE #2: restartQuiz (löscht Attempts + setzt Quiz zurück)
+    public void restartQuiz(Connection c, long quizId, long teacherId) throws Exception {
+        // Nur erlauben, wenn Quiz dem Lehrer gehört
+        try (PreparedStatement guard = c.prepareStatement("SELECT 1 FROM class_quizzes WHERE id=? AND teacher_id=?")) {
+            guard.setLong(1, quizId);
+            guard.setLong(2, teacherId);
+            try (ResultSet rs = guard.executeQuery()) {
+                if (!rs.next()) return;
             }
         }
-    }
 
-    public LocalDateTime getEndsAt(Connection c, long quizId) throws Exception {
-        try (PreparedStatement ps = c.prepareStatement("SELECT ends_at FROM class_quizzes WHERE id=?")) {
-            ps.setLong(1, quizId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) return null;
-                Timestamp t = rs.getTimestamp("ends_at");
-                return t == null ? null : t.toLocalDateTime();
-            }
+        // Antworten löschen
+        try (PreparedStatement ps1 = c.prepareStatement(
+                "DELETE aa FROM attempt_answers aa JOIN quiz_attempts qa ON qa.id=aa.attempt_id WHERE qa.quiz_id=?")) {
+            ps1.setLong(1, quizId);
+            ps1.executeUpdate();
         }
-    }
 
-    public String getStatus(Connection c, long quizId) throws Exception {
-        try (PreparedStatement ps = c.prepareStatement("SELECT status FROM class_quizzes WHERE id=?")) {
-            ps.setLong(1, quizId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (!rs.next()) return null;
-                return rs.getString("status");
-            }
+        // Attempts löschen
+        try (PreparedStatement ps2 = c.prepareStatement("DELETE FROM quiz_attempts WHERE quiz_id=?")) {
+            ps2.setLong(1, quizId);
+            ps2.executeUpdate();
+        }
+
+        // Quiz zurücksetzen
+        try (PreparedStatement ps3 = c.prepareStatement("""
+            UPDATE class_quizzes
+            SET status='NOT_STARTED',
+                invite_code=NULL,
+                duration_seconds=NULL,
+                started_at=NULL,
+                ends_at=NULL,
+                ended_at=NULL
+            WHERE id=? AND teacher_id=?
+        """)) {
+            ps3.setLong(1, quizId);
+            ps3.setLong(2, teacherId);
+            ps3.executeUpdate();
         }
     }
 }

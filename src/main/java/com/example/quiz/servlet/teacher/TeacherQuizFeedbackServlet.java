@@ -10,14 +10,26 @@ import java.sql.Connection;
 import java.util.List;
 
 public class TeacherQuizFeedbackServlet extends HttpServlet {
+
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        long teacherId = (long) req.getSession().getAttribute("teacherId");
-        long quizId = Long.parseLong(req.getParameter("id"));
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        HttpSession s = req.getSession(false);
+        long teacherId = (long) s.getAttribute("teacherId");
+
+        String idStr = req.getParameter("id");
+        if (idStr == null) {
+            resp.sendRedirect(req.getContextPath() + "/teacher/dashboard");
+            return;
+        }
+
+        long quizId = Long.parseLong(idStr);
 
         try (Connection c = DB.getConnection(getServletContext())) {
-            QuizDao qdao = new QuizDao();
-            List<String> feedback = qdao.listFeedback(c, quizId, teacherId);
+            QuizDao dao = new QuizDao();
+            List<String> feedback = dao.listFeedback(c, quizId, teacherId);
+
             req.setAttribute("feedback", feedback);
             req.setAttribute("quizId", quizId);
             req.getRequestDispatcher("/WEB-INF/jsp/teacher/feedback.jsp").forward(req, resp);

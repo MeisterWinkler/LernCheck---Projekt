@@ -8,32 +8,45 @@ import jakarta.servlet.http.*;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.time.LocalDateTime;
+import java.time.ZoneId;
 
 public class StudentTakeQuizServlet extends HttpServlet {
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String code = (String) req.getSession().getAttribute("inviteCode");
-        if (code == null) {
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp)
+            throws ServletException, IOException {
+
+        HttpSession s = req.getSession(false);
+        if (s == null || s.getAttribute("inviteCode") == null) {
             resp.sendRedirect(req.getContextPath() + "/student/join");
             return;
         }
 
+        String code = (String) s.getAttribute("inviteCode");
+
         try (Connection c = DB.getConnection(getServletContext())) {
-            QuizDao qdao = new QuizDao();
-            Quiz quiz = qdao.loadClassQuizForStudentByCode(c, code);
+            QuizDao dao = new QuizDao();
+            Quiz quiz = dao.loadClassQuizForStudentByCode(c, code);
+
             if (quiz == null) {
-                req.setAttribute("message", "Quiz ist nicht verfügbar (evtl. beendet).");
+                req.setAttribute("message", "Quiz ist nicht aktiv oder bereits abgelaufen.");
+                req.setAttribute("showStudentOnly", true);
                 req.getRequestDispatcher("/WEB-INF/jsp/error.jsp").forward(req, resp);
                 return;
             }
 
-            // serverseitig ablaufen lassen
-            LocalDateTime endsAt = qdao.getEndsAt(c, quiz.getQuizId());
+            // für JS-Timer
+            if (quiz.getEndsAt() != null) {
+                long endsAtMillis = quiz.getEndsAt()
+                        .atZone(ZoneId.systemDefault())
+                        .toInstant()
+                        .toEpochMilli();
+                req.setAttribute("endsAtMillis", endsAtMillis);
+            }
+
             req.setAttribute("quiz", quiz);
-            req.setAttribute("endsAt", endsAt); // für JS Countdown
             req.getRequestDispatcher("/WEB-INF/jsp/student/take_quiz.jsp").forward(req, resp);
+
         } catch (Exception e) {
             throw new ServletException(e);
         }
