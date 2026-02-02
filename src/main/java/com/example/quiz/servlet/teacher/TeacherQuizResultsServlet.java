@@ -1,0 +1,33 @@
+package com.example.quiz.servlet.teacher;
+
+import com.example.quiz.dao.QuizDao;
+import com.example.quiz.model.QuizResultRow;
+import com.example.quiz.util.DB;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.*;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.time.LocalDateTime;
+import java.util.List;
+
+public class TeacherQuizResultsServlet extends HttpServlet {
+    @Override
+    protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        long teacherId = (long) req.getSession().getAttribute("teacherId");
+        long quizId = Long.parseLong(req.getParameter("id"));
+
+        try (Connection c = DB.getConnection(getServletContext())) {
+            QuizDao qdao = new QuizDao();
+            List<QuizResultRow> rows = qdao.computeResults(c, quizId, teacherId);
+            LocalDateTime endedAt = qdao.getEndedAt(c, quizId, teacherId);
+
+            req.setAttribute("rows", rows);
+            req.setAttribute("quizId", quizId);
+            req.setAttribute("endedAt", endedAt);
+            req.getRequestDispatcher("/WEB-INF/jsp/teacher/results.jsp").forward(req, resp);
+        } catch (Exception e) {
+            throw new ServletException(e);
+        }
+    }
+}

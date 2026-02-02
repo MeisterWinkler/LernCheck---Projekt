@@ -1,0 +1,35 @@
+body { font-family: system-ui, Arial, sans-serif; margin: 0; background: #f6f7fb; }
+.container { max-width: 980px; margin: 24px auto; padding: 0 16px; }
+h1 { margin: 8px 0 16px; }
+
+.card { background: white; border-radius: 12px; padding: 16px; margin: 12px 0; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
+.tile { display: block; background: white; padding: 20px; border-radius: 12px; text-decoration: none; color: #111; box-shadow: 0 2px 8px rgba(0,0,0,.06); font-weight: 700; text-align: center; }
+
+.btn { display: inline-block; padding: 10px 14px; border-radius: 10px; border: none; background: #2f6fed; color: white; text-decoration: none; cursor: pointer; font-weight: 700; }
+.btn.secondary { background: #667085; }
+.btn.danger { background: #d92d20; }
+
+label { display:block; margin-top: 10px; font-weight: 600; }
+input, select, textarea { width: 100%; padding: 10px; border-radius: 10px; border: 1px solid #d0d5dd; margin-top: 6px; box-sizing: border-box; }
+textarea { min-height: 90px; resize: vertical; }
+
+.error { color: #b42318; font-weight: 700; }
+.ok { color: #027a48; font-weight: 700; }
+.muted { color: #667085; }
+
+.topbar { display:flex; align-items:center; justify-content:space-between; gap: 12px; }
+.topbar-right { display:flex; align-items:center; gap: 10px; flex-wrap: wrap; }
+.row { display:flex; align-items:center; justify-content:space-between; gap: 12px; flex-wrap: wrap; }
+
+.title { font-size: 18px; font-weight: 800; }
+.two-col { display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+.timerbox { background: white; padding: 10px 14px; border-radius: 999px; font-weight: 800; box-shadow: 0 2px 8px rgba(0,0,0,.06); }
+
+.options { display:flex; flex-direction:column; gap: 8px; margin-top: 10px; }
+.opt { display:flex; gap: 10px; align-items:flex-start; background: #f9fafb; padding: 10px; border-radius: 10px; }
+.opt input { width: auto; margin-top: 3px; }
+
+hr.good { border: none; height: 6px; background: #12b76a; border-radius: 999px; }
+hr.bad  { border: none; height: 6px; background: #f04438; border-radius: 999px; }

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="bb6f378a-a5d0-40e4-b675-86b4372411a7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/db/schema.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/db/seed.sql" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/dao/ClassDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/dao/QuizDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/dao/StudentDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/dao/TeacherDao.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/filter/AuthFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/model/Klass.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/model/Quiz.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/model/QuizQuestion.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/model/QuizResultRow.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/model/Teacher.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/model/TemplateSummary.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/student/StudentJoinServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/student/StudentSubmitServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/student/StudentTakeQuizServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherClassQuizzesServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherDashboardServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherLoginServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherLogoutServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherQuizBuilderServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherQuizFeedbackServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherQuizResultsServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherRestartQuizServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherStartQuizServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherTemplateSelectServlet.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/util/DB.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/util/Passwords.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/util/Token.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/error.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/student/join.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/student/take_quiz.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/class_quizzes.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/dashboard.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/feedback.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/login.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/quiz_builder.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/results.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/start_quiz.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/template_select.jsp" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/webapp/static/app.css" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="main" />
+      </map>
+    </option>
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory">{
+  &quot;lastFilter&quot;: {
+    &quot;state&quot;: &quot;OPEN&quot;,
+    &quot;assignee&quot;: &quot;MeisterWinkler&quot;
+  }
+}</component>
+  <component name="GithubPullRequestsUISettings">{
+  &quot;selectedUrlAndAccountId&quot;: {
+    &quot;url&quot;: &quot;https://github.com/MeisterWinkler/LernCheck---Projekt.git&quot;,
+    &quot;accountId&quot;: &quot;f889426d-5cb5-4c13-93e1-265e2dfcf105&quot;
+  }
+}</component>
+  <component name="LogFilters">
+    <option name="FILTER_ERRORS" value="false" />
+    <option name="FILTER_WARNINGS" value="false" />
+    <option name="FILTER_INFO" value="true" />
+    <option name="FILTER_DEBUG" value="true" />
+    <option name="CUSTOM_FILTER" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 8
+}</component>
+  <component name="ProjectId" id="396dXpAN1CCcKCsu67ERvmpvXGH" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "Smart Tomcat.Unnamed.executor": "Run",
+    "Smart Tomcat.deineMom.executor": "Run",
+    "git-widget-placeholder": "mkosev/the-empire-strikes-back",
+    "kotlin-language-version-configured": "true",
+    "settings.editor.selected.configurable": "preferences.pluginManager"
+  },
+  "keyToStringList": {
+    "DatabaseDriversLRU": [
+      "mariadb"
+    ]
+  }
+}]]></component>
+  <component name="RunManager">
+    <configuration name="deineMom" type="com.poratu.idea.plugins.tomcat">
+      <predefined_log_file enabled="true" id="Tomcat Localhost Log" />
+      <predefined_log_file enabled="true" id="Tomcat Access Log" />
+      <predefined_log_file id="Tomcat Catalina Log" />
+      <predefined_log_file id="Tomcat Manager Log" />
+      <predefined_log_file id="Tomcat Host Manager Log" />
+      <option name="catalinaBase" value="C:\Users\momch\.SmartTomcat\LernCheck---Projekt\LernCheck---Projekt" />
+      <option name="contextPath" value="/LernCheck---Projekt" />
+      <option name="docBase" value="$PROJECT_DIR$/src/main/webapp" />
+      <option name="envOptions">
+        <map />
+      </option>
+      <option name="extraClassPath" value="" />
+      <option name="tomcatInfo">
+        <TomcatInfo>
+          <option name="name" value="Apache Tomcat/11.0.18" />
+          <option name="path" value="$USER_HOME$/Downloads/apache-tomcat-11.0.18/apache-tomcat-11.0.18" />
+          <option name="version" value="11.0.18.0" />
+        </TomcatInfo>
+      </option>
+      <option name="vmOptions" value="" />
+      <module name="LernCheck---Projekt" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-30f59d01ecdd-2fc7cc6b9a17-intellij.indexing.shared.core-IU-253.30387.90" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="bb6f378a-a5d0-40e4-b675-86b4372411a7" name="Changes" comment="" />
+      <created>1770020497061</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1770020497061</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>
