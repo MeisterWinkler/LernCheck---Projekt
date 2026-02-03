@@ -5,29 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="bb6f378a-a5d0-40e4-b675-86b4372411a7" name="Changes" comment="funktioniert besser als davor xD">
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/dao/ClassDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/dao/ClassDao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/dao/QuizDao.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/dao/QuizDao.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherClassQuizzesServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherClassQuizzesServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherCreateClassServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherCreateClassServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherDashboardServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherDashboardServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherQuizBuilderServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherQuizBuilderServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherStartQuizServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherStartQuizServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherTemplateSelectServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherTemplateSelectServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/util/Token.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/util/Token.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/quiz_builder.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/quiz_builder.jsp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/start_quiz.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/start_quiz.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/filter/AuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/filter/AuthFilter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherLoginServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherLoginServlet.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/web.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/dao/ClassDao.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/dao/ClassDao.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/dao/QuizDao.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/dao/QuizDao.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherClassQuizzesServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherClassQuizzesServlet.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherCreateClassServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherCreateClassServlet.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherDashboardServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherDashboardServlet.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherQuizBuilderServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherQuizBuilderServlet.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherStartQuizServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherStartQuizServlet.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherTemplateSelectServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherTemplateSelectServlet.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/util/Token.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/util/Token.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -106,6 +87,9 @@
       <option name="catalinaBase" value="C:\Users\momch\.SmartTomcat\LernCheck---Projekt\LernCheck---Projekt" />
       <option name="contextPath" value="/LernCheck---Projekt" />
       <option name="docBase" value="$PROJECT_DIR$/src/main/webapp" />
+      <option name="envOptions">
+        <map />
+      </option>
       <option name="extraClassPath" value="" />
       <option name="tomcatInfo">
         <TomcatInfo>

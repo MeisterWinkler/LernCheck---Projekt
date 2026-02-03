@@ -15,6 +15,8 @@ public class TeacherLoginServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
             throws ServletException, IOException {
+
+        // ✅ Login JSP ist NICHT direkt aufrufbar (liegt unter /WEB-INF)
         req.getRequestDispatcher("/WEB-INF/jsp/teacher/login.jsp").forward(req, resp);
     }
 
@@ -25,19 +27,22 @@ public class TeacherLoginServlet extends HttpServlet {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
 
+        if (username == null) username = "";
+        if (password == null) password = "";
+
         try (Connection c = DB.getConnection(getServletContext())) {
+
             TeacherDao dao = new TeacherDao();
-            Teacher t = dao.findByUsername(c, username);
+            Teacher t = dao.findByUsername(c, username.trim());
 
             if (t == null || !Passwords.verify(password, t.getPasswordHash())) {
-                req.setAttribute("error", "Falscher Benutzername oder Passwort.");
+                req.setAttribute("error", "Benutzername oder Passwort ist falsch.");
                 req.getRequestDispatcher("/WEB-INF/jsp/teacher/login.jsp").forward(req, resp);
                 return;
             }
 
-            HttpSession s = req.getSession(true);
-            s.setAttribute("teacherId", t.getId());
-            s.setAttribute("teacherUsername", t.getUsername());
+            HttpSession session = req.getSession(true);
+            session.setAttribute("teacherId", t.getId());
 
             resp.sendRedirect(req.getContextPath() + "/teacher/dashboard");
 

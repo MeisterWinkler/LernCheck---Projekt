@@ -8,9 +8,6 @@ import java.io.IOException;
 public class AuthFilter implements Filter {
 
     @Override
-    public void init(FilterConfig filterConfig) { }
-
-    @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
@@ -20,21 +17,27 @@ public class AuthFilter implements Filter {
         String uri = req.getRequestURI();
         String ctx = req.getContextPath();
 
-        boolean isStatic = uri.startsWith(ctx + "/static/");
-        boolean isTeacherLogin = uri.equals(ctx + "/teacher/login");
-        boolean isTeacherRegister = uri.equals(ctx + "/teacher/register");
-
-        // Student-Bereich nie durch Teacher-Auth blockieren
-        boolean isStudent = uri.startsWith(ctx + "/student/");
-
-        if (isStatic || isStudent || isTeacherLogin || isTeacherRegister) {
+        // statics immer erlauben
+        if (uri.startsWith(ctx + "/static/")) {
             chain.doFilter(request, response);
             return;
         }
 
-        // Teacher-Bereich schützen
+        // Login/Register immer erlauben
+        if (uri.equals(ctx + "/teacher/login") || uri.equals(ctx + "/teacher/register")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // Studentbereich nicht vom Teacher-Filter blocken
+        if (uri.startsWith(ctx + "/student/")) {
+            chain.doFilter(request, response);
+            return;
+        }
+
+        // Teacherbereich schützen
         if (uri.startsWith(ctx + "/teacher/")) {
-            HttpSession session = req.getSession(false); // ✅ wichtig
+            HttpSession session = req.getSession(false);
             Object teacherId = (session == null) ? null : session.getAttribute("teacherId");
 
             if (teacherId == null) {
@@ -45,7 +48,4 @@ public class AuthFilter implements Filter {
 
         chain.doFilter(request, response);
     }
-
-    @Override
-    public void destroy() { }
 }
