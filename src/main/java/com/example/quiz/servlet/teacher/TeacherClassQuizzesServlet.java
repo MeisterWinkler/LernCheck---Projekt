@@ -21,12 +21,13 @@ public class TeacherClassQuizzesServlet extends HttpServlet {
 
         try (Connection c = DB.getConnection(getServletContext())) {
             QuizDao qdao = new QuizDao();
-            qdao.endAllExpired(c); // ✅ immer
+            qdao.endAllExpired(c);
 
             ClassDao classDao = new ClassDao();
-            Klass k = classDao.findById(c, classId);
+            Klass k = classDao.findByIdForTeacher(c, classId, teacherId);
+
             if (k == null) {
-                req.setAttribute("message", "Klasse nicht gefunden.");
+                req.setAttribute("message", "Klasse nicht gefunden oder gehört dir nicht.");
                 req.setAttribute("showTeacherLinks", true);
                 req.getRequestDispatcher("/WEB-INF/jsp/error.jsp").forward(req, resp);
                 return;
@@ -34,8 +35,8 @@ public class TeacherClassQuizzesServlet extends HttpServlet {
 
             req.setAttribute("klass", k);
             req.setAttribute("quizzes", qdao.listQuizzesForTeacherAndClass(c, teacherId, classId));
-            req.getRequestDispatcher("/WEB-INF/jsp/teacher/class_quizzes.jsp").forward(req, resp);
 
+            req.getRequestDispatcher("/WEB-INF/jsp/teacher/class_quizzes.jsp").forward(req, resp);
         } catch (Exception e) {
             throw new ServletException(e);
         }

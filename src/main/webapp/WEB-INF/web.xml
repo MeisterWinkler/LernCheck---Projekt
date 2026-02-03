@@ -1,169 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app xmlns="https://jakarta.ee/xml/ns/jakartaee"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_1.xsd"
-         version="6.1">
+         xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
+         version="6.0">
 
-    <display-name>Quiz WebApp</display-name>
+    <display-name>LernCheck</display-name>
 
-    <!-- DB Config -->
-    <context-param>
-        <param-name>db.driver</param-name>
-        <param-value>org.mariadb.jdbc.Driver</param-value>
-    </context-param>
-    <context-param>
-        <param-name>db.url</param-name>
-        <param-value>jdbc:mariadb://localhost:3306/quizapp</param-value>
-    </context-param>
-    <context-param>
-        <param-name>db.user</param-name>
-        <param-value>root</param-value>
-    </context-param>
-    <context-param>
-        <param-name>db.pass</param-name>
-        <param-value></param-value>
-    </context-param>
-
-    <!-- ========= Teacher Servlets ========= -->
-
-    <servlet>
-        <servlet-name>TeacherLogin</servlet-name>
-        <servlet-class>com.example.quiz.servlet.teacher.TeacherLoginServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TeacherLogin</servlet-name>
-        <url-pattern>/teacher/login</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>TeacherRegister</servlet-name>
-        <servlet-class>com.example.quiz.servlet.teacher.TeacherRegisterServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TeacherRegister</servlet-name>
-        <url-pattern>/teacher/register</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>TeacherLogout</servlet-name>
-        <servlet-class>com.example.quiz.servlet.teacher.TeacherLogoutServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TeacherLogout</servlet-name>
-        <url-pattern>/teacher/logout</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>TeacherDashboard</servlet-name>
-        <servlet-class>com.example.quiz.servlet.teacher.TeacherDashboardServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TeacherDashboard</servlet-name>
-        <url-pattern>/teacher/dashboard</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>TeacherClassQuizzes</servlet-name>
-        <servlet-class>com.example.quiz.servlet.teacher.TeacherClassQuizzesServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TeacherClassQuizzes</servlet-name>
-        <url-pattern>/teacher/class</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>TeacherQuizBuilder</servlet-name>
-        <servlet-class>com.example.quiz.servlet.teacher.TeacherQuizBuilderServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TeacherQuizBuilder</servlet-name>
-        <url-pattern>/teacher/quiz/builder</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>TeacherTemplateSelect</servlet-name>
-        <servlet-class>com.example.quiz.servlet.teacher.TeacherTemplateSelectServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TeacherTemplateSelect</servlet-name>
-        <url-pattern>/teacher/templates</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>TeacherStartQuiz</servlet-name>
-        <servlet-class>com.example.quiz.servlet.teacher.TeacherStartQuizServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TeacherStartQuiz</servlet-name>
-        <url-pattern>/teacher/quiz/start</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>TeacherResults</servlet-name>
-        <servlet-class>com.example.quiz.servlet.teacher.TeacherQuizResultsServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TeacherResults</servlet-name>
-        <url-pattern>/teacher/quiz/results</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>TeacherFeedback</servlet-name>
-        <servlet-class>com.example.quiz.servlet.teacher.TeacherQuizFeedbackServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TeacherFeedback</servlet-name>
-        <url-pattern>/teacher/quiz/feedback</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>TeacherRestart</servlet-name>
-        <servlet-class>com.example.quiz.servlet.teacher.TeacherRestartQuizServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>TeacherRestart</servlet-name>
-        <url-pattern>/teacher/quiz/restart</url-pattern>
-    </servlet-mapping>
-
-    <!-- ========= Student Servlets ========= -->
-
-    <servlet>
-        <servlet-name>StudentJoin</servlet-name>
-        <servlet-class>com.example.quiz.servlet.student.StudentJoinServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>StudentJoin</servlet-name>
-        <url-pattern>/student/join</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>StudentTakeQuiz</servlet-name>
-        <servlet-class>com.example.quiz.servlet.student.StudentTakeQuizServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>StudentTakeQuiz</servlet-name>
-        <url-pattern>/student/quiz</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>StudentSubmit</servlet-name>
-        <servlet-class>com.example.quiz.servlet.student.StudentSubmitServlet</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>StudentSubmit</servlet-name>
-        <url-pattern>/student/submit</url-pattern>
-    </servlet-mapping>
-
-    <servlet>
-        <servlet-name>TeacherCreateClass</servlet-name>
-        <servlet-class>com.example.quiz.servlet.teacher.TeacherCreateClassServlet</servlet-class>
-    </servlet>
-
-    <servlet-mapping>
-        <servlet-name>TeacherCreateClass</servlet-name>
-        <url-pattern>/teacher/class/create</url-pattern>
-    </servlet-mapping>
-    <!-- ========= Auth Filter (Teacher-Bereich schützen) ========= -->
+    <!-- ===================== FILTER ===================== -->
     <filter>
         <filter-name>AuthFilter</filter-name>
         <filter-class>com.example.quiz.filter.AuthFilter</filter-class>
@@ -174,8 +17,148 @@
         <url-pattern>/teacher/*</url-pattern>
     </filter-mapping>
 
+    <!-- ===================== TEACHER SERVLETS ===================== -->
+
+    <servlet>
+        <servlet-name>TeacherLoginServlet</servlet-name>
+        <servlet-class>com.example.quiz.servlet.teacher.TeacherLoginServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TeacherLoginServlet</servlet-name>
+        <url-pattern>/teacher/login</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TeacherRegisterServlet</servlet-name>
+        <servlet-class>com.example.quiz.servlet.teacher.TeacherRegisterServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TeacherRegisterServlet</servlet-name>
+        <url-pattern>/teacher/register</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TeacherLogoutServlet</servlet-name>
+        <servlet-class>com.example.quiz.servlet.teacher.TeacherLogoutServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TeacherLogoutServlet</servlet-name>
+        <url-pattern>/teacher/logout</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TeacherDashboardServlet</servlet-name>
+        <servlet-class>com.example.quiz.servlet.teacher.TeacherDashboardServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TeacherDashboardServlet</servlet-name>
+        <url-pattern>/teacher/dashboard</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TeacherCreateClassServlet</servlet-name>
+        <servlet-class>com.example.quiz.servlet.teacher.TeacherCreateClassServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TeacherCreateClassServlet</servlet-name>
+        <url-pattern>/teacher/class/create</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TeacherClassQuizzesServlet</servlet-name>
+        <servlet-class>com.example.quiz.servlet.teacher.TeacherClassQuizzesServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TeacherClassQuizzesServlet</servlet-name>
+        <url-pattern>/teacher/class</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TeacherQuizBuilderServlet</servlet-name>
+        <servlet-class>com.example.quiz.servlet.teacher.TeacherQuizBuilderServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TeacherQuizBuilderServlet</servlet-name>
+        <url-pattern>/teacher/quiz/builder</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TeacherTemplateSelectServlet</servlet-name>
+        <servlet-class>com.example.quiz.servlet.teacher.TeacherTemplateSelectServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TeacherTemplateSelectServlet</servlet-name>
+        <url-pattern>/teacher/templates</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TeacherStartQuizServlet</servlet-name>
+        <servlet-class>com.example.quiz.servlet.teacher.TeacherStartQuizServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TeacherStartQuizServlet</servlet-name>
+        <url-pattern>/teacher/quiz/start</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TeacherQuizResultsServlet</servlet-name>
+        <servlet-class>com.example.quiz.servlet.teacher.TeacherQuizResultsServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TeacherQuizResultsServlet</servlet-name>
+        <url-pattern>/teacher/quiz/results</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TeacherQuizFeedbackServlet</servlet-name>
+        <servlet-class>com.example.quiz.servlet.teacher.TeacherQuizFeedbackServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TeacherQuizFeedbackServlet</servlet-name>
+        <url-pattern>/teacher/quiz/feedback</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>TeacherRestartQuizServlet</servlet-name>
+        <servlet-class>com.example.quiz.servlet.teacher.TeacherRestartQuizServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>TeacherRestartQuizServlet</servlet-name>
+        <url-pattern>/teacher/quiz/restart</url-pattern>
+    </servlet-mapping>
+
+    <!-- ===================== STUDENT SERVLETS ===================== -->
+
+    <servlet>
+        <servlet-name>StudentJoinServlet</servlet-name>
+        <servlet-class>com.example.quiz.servlet.student.StudentJoinServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentJoinServlet</servlet-name>
+        <url-pattern>/student/join</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>StudentTakeQuizServlet</servlet-name>
+        <servlet-class>com.example.quiz.servlet.student.StudentTakeQuizServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentTakeQuizServlet</servlet-name>
+        <url-pattern>/student/take</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>StudentSubmitServlet</servlet-name>
+        <servlet-class>com.example.quiz.servlet.student.StudentSubmitServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>StudentSubmitServlet</servlet-name>
+        <url-pattern>/student/submit</url-pattern>
+    </servlet-mapping>
+
+    <!-- Default welcome -->
     <welcome-file-list>
-        <welcome-file>teacher/login</welcome-file>
+        <welcome-file>teacher/login.jsp</welcome-file>
     </welcome-file-list>
 
 </web-app>

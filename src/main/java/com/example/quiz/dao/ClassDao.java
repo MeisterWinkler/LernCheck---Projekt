@@ -2,49 +2,36 @@ package com.example.quiz.dao;
 
 import com.example.quiz.model.Klass;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ClassDao {
 
-    /**
-     * Liste aller Klassen (für Dropdown etc.)
-     * (Falls du nur teacher-spezifische Klassen willst, nutze listForTeacher)
-     */
-    public List<Klass> listAll(Connection c) throws Exception {
-        String sql = "SELECT id, name FROM classes ORDER BY name";
+    // ✅ Neu: nur Klassen dieses Lehrers
+    public List<Klass> listForTeacher(Connection c, long teacherId) throws Exception {
+        String sql = "SELECT id, name FROM classes WHERE teacher_id=? ORDER BY name";
         List<Klass> out = new ArrayList<>();
-        try (PreparedStatement ps = c.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                Klass k = new Klass();
-                k.setId(rs.getLong("id"));
-                k.setName(rs.getString("name"));
-                out.add(k);
+        try (PreparedStatement ps = c.prepareStatement(sql)) {
+            ps.setLong(1, teacherId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Klass k = new Klass();
+                    k.setId(rs.getLong("id"));
+                    k.setName(rs.getString("name"));
+                    out.add(k);
+                }
             }
         }
         return out;
     }
 
-    /**
-     * ✅ FIX: Diese Methode wird vom TeacherDashboardServlet erwartet.
-     * Falls du Klassen NICHT teacher-spezifisch speicherst, liefert sie einfach alle Klassen zurück.
-     * Wenn du später teacher_id in der classes-Tabelle einführst, kannst du hier filtern.
-     */
-    public List<Klass> listForTeacher(Connection c, long teacherId) throws Exception {
-        // Aktuell: alle Klassen (weil classes typischerweise global sind)
-        // Falls es bei dir teacher_id gibt, ersetze Query z.B.:
-        // SELECT id,name FROM classes WHERE teacher_id=? ORDER BY name
-        return listAll(c);
-    }
-
-    public Klass findById(Connection c, long id) throws Exception {
-        String sql = "SELECT id, name FROM classes WHERE id=?";
+    // ✅ Neu: findet Klasse nur wenn sie dem Lehrer gehört
+    public Klass findByIdForTeacher(Connection c, long classId, long teacherId) throws Exception {
+        String sql = "SELECT id, name FROM classes WHERE id=? AND teacher_id=?";
         try (PreparedStatement ps = c.prepareStatement(sql)) {
-            ps.setLong(1, id);
+            ps.setLong(1, classId);
+            ps.setLong(2, teacherId);
             try (ResultSet rs = ps.executeQuery()) {
                 if (!rs.next()) return null;
                 Klass k = new Klass();
@@ -55,15 +42,38 @@ public class ClassDao {
         }
     }
 
-    public long create(Connection c, String name) throws Exception {
-        String sql = "INSERT INTO classes(name) VALUES (?)";
-        try (PreparedStatement ps = c.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, name);
+    // ✅ Neu: Klasse anlegen (teacher_id Pflicht)
+    public long create(Connection c, long teacherId, String name) throws Exception {
+        String sql = "INSERT INTO classes(teacher_id, name) VALUES (?,?)";
+        try (PreparedStatement ps = c.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setLong(1, teacherId);
+            ps.setString(2, name);
             ps.executeUpdate();
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 rs.next();
                 return rs.getLong(1);
             }
         }
+    }
+
+    // ============================================================
+    // ✅ Kompatibilitätsschicht (damit alte Servlets nicht mehr rot sind)
+    // ============================================================
+
+    /**
+     * Früher gab es listAll(Connection). Das darf es für die Logik eigentlich nicht mehr geben,
+     * weil sonst Lehrer fremde Klassen sehen würden.
+     * Deshalb werfen wir hier bewusst eine Exception – und korrigieren alle Servlets unten.
+     * Damit du sofort siehst wo es noch verwendet wird.
+     */
+    public List<Klass> listAll(Connection c) throws Exception {
+        throw new UnsupportedOperationException("listAll() ist deaktiviert. Nutze listForTeacher(c, teacherId).");
+    }
+
+    /**
+     * Früher gab es findById(Connection,long). Das ist unsicher ohne teacherId.
+     */
+    public Klass findById(Connection c, long classId) throws Exception {
+        throw new UnsupportedOperationException("findById() ist deaktiviert. Nutze findByIdForTeacher(c, classId, teacherId).");
     }
 }

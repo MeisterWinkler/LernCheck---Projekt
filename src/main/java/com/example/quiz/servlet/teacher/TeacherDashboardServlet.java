@@ -18,7 +18,6 @@ public class TeacherDashboardServlet extends HttpServlet {
         long teacherId = (long) req.getSession(false).getAttribute("teacherId");
 
         try (Connection c = DB.getConnection(getServletContext())) {
-            // ✅ wichtig: beim Dashboard immer expired schließen
             new QuizDao().endAllExpired(c);
 
             ClassDao classDao = new ClassDao();
