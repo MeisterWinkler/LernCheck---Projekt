@@ -4,11 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="bb6f378a-a5d0-40e4-b675-86b4372411a7" name="Changes" comment="funktioniert besser als davor xD">
+    <list default="true" id="bb6f378a-a5d0-40e4-b675-86b4372411a7" name="Changes" comment="alles funktioniert mehr oder weniger">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/filter/AuthFilter.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/filter/AuthFilter.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherLoginServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherLoginServlet.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/web.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/web.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherQuizBuilderServlet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/example/quiz/servlet/teacher/TeacherQuizBuilderServlet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/quiz_builder.jsp" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/webapp/WEB-INF/jsp/teacher/quiz_builder.jsp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherQuizBuilderServlet.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/com/example/quiz/servlet/teacher/TeacherQuizBuilderServlet.class" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -87,9 +87,6 @@
       <option name="catalinaBase" value="C:\Users\momch\.SmartTomcat\LernCheck---Projekt\LernCheck---Projekt" />
       <option name="contextPath" value="/LernCheck---Projekt" />
       <option name="docBase" value="$PROJECT_DIR$/src/main/webapp" />
-      <option name="envOptions">
-        <map />
-      </option>
       <option name="extraClassPath" value="" />
       <option name="tomcatInfo">
         <TomcatInfo>
@@ -160,7 +157,15 @@
       <option name="project" value="LOCAL" />
       <updated>1770040804260</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="alles funktioniert mehr oder weniger">
+      <option name="closed" value="true" />
+      <created>1770125706867</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1770125706867</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="VcsManagerConfiguration">
@@ -168,7 +173,8 @@
     <MESSAGE value="funktioniert mehr als davor" />
     <MESSAGE value="Grundsachen funktionieren alle...yeahhhhh" />
     <MESSAGE value="funktioniert besser als davor xD" />
-    <option name="LAST_COMMIT_MESSAGE" value="funktioniert besser als davor xD" />
+    <MESSAGE value="alles funktioniert mehr oder weniger" />
+    <option name="LAST_COMMIT_MESSAGE" value="alles funktioniert mehr oder weniger" />
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
