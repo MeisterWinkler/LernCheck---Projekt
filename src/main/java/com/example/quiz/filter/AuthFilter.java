@@ -1,7 +1,9 @@
 package com.example.quiz.filter;
 
 import jakarta.servlet.*;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
@@ -14,33 +16,26 @@ public class AuthFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
 
-        String uri = req.getRequestURI();
         String ctx = req.getContextPath();
+        String uri = req.getRequestURI();
 
-        // statics immer erlauben
-        if (uri.startsWith(ctx + "/static/")) {
+        // ✅ Öffentlich (ohne Login)
+        boolean isPublic =
+                uri.equals(ctx + "/") ||
+                        uri.equals(ctx + "/teacher/login") ||
+                        uri.equals(ctx + "/teacher/register") ||
+                        uri.startsWith(ctx + "/student/") ||
+                        uri.startsWith(ctx + "/static/");
+
+        if (isPublic) {
             chain.doFilter(request, response);
             return;
         }
 
-        // Login/Register immer erlauben
-        if (uri.equals(ctx + "/teacher/login") || uri.equals(ctx + "/teacher/register")) {
-            chain.doFilter(request, response);
-            return;
-        }
-
-        // Studentbereich nicht vom Teacher-Filter blocken
-        if (uri.startsWith(ctx + "/student/")) {
-            chain.doFilter(request, response);
-            return;
-        }
-
-        // Teacherbereich schützen
+        // ✅ Alles unter /teacher/* braucht teacherId in Session
         if (uri.startsWith(ctx + "/teacher/")) {
             HttpSession session = req.getSession(false);
-            Object teacherId = (session == null) ? null : session.getAttribute("teacherId");
-
-            if (teacherId == null) {
+            if (session == null || session.getAttribute("teacherId") == null) {
                 resp.sendRedirect(ctx + "/teacher/login");
                 return;
             }
